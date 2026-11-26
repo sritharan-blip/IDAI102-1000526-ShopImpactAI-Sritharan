@@ -41,7 +41,8 @@ Track what you spend. Explore your estimated footprint. Find products that fit y
 
 | A clearer view | What you can do |
 | :--- | :--- |
-| **Liquid glass, two ways** | Frosted layers, moving aurora light, floating data cards, luminous edges, and a coordinated Daylight / Midnight palette. |
+| **Liquid glass, two ways** | Frosted layers, floating data cards, and a Daylight / Midnight palette. The 3D Earth backdrop turns to a distinct angle on each page. |
+| **Orbit, your Earth mascot** | Spin a 3D mini Earth by dragging or using the arrow keys. Its expression, colors, and haze react as this month's estimated footprint approaches or exceeds your goal. |
 | **Your impact, in motion** | Follow monthly spending, category estimates, lower-impact choices, goals, and your recent activity. The hero cards use your actual session data. |
 | **Smart matches** | Describe what you need. A local content model ranks the demo catalog by text similarity, category, budget, and estimated reduction, with reasons for every pick. |
 | **Decision lab** | Explore cost per use and budget fit. Save a pause plan to your wishlist for tomorrow, three days, or next week. |
@@ -76,7 +77,7 @@ Track what you spend. Explore your estimated footprint. Find products that fit y
 
 ## Run locally
 
-Requires **Python 3.10 or later**. No API key or Streamlit secrets are needed.
+Requires **Python 3.10 or later**. Local demo mode runs without API keys or Streamlit secrets.
 
 <details open>
 <summary><strong>Windows PowerShell</strong></summary>
@@ -117,6 +118,16 @@ Open the local address printed in your terminal, usually `http://localhost:8501`
 
 For Streamlit Community Cloud, select this repository, the `main` branch, and `ShopImpactAI.py` as the main file.
 
+### Enable Google sign-in and cloud saves
+
+1. In [Google Auth Platform](https://console.cloud.google.com/auth/overview), configure an external app audience and create a **Web application** OAuth client. If the app is in testing, add the Google accounts that should be able to sign in.
+2. Add your exact callback URL under **Authorized redirect URIs**. For example, use `https://YOUR-APP.streamlit.app/oauth2callback` for Streamlit Community Cloud or `http://localhost:8501/oauth2callback` for local testing. Use the same value in the app's secrets.
+3. Create a hosted PostgreSQL database with a TLS certificate trusted by the system. Run [`tools/cloud_schema.sql`](tools/cloud_schema.sql) in its SQL editor. Give the app's dedicated database role `SELECT`, `INSERT`, and `UPDATE` on `shopimpact_workspaces`.
+4. Copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into the deployed app's **Settings → Secrets**, or into the ignored `.streamlit/secrets.toml` for local testing. Fill in the Google client ID and secret, the Postgres connection string, and a random cookie secret generated with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+5. Restart the app. Sign in, add a purchase, then reopen the app in a fresh session to check that your data returns. Sign in with a second test account to verify it opens its own workspace.
+
+The app enables the sign-in screen once configured. On hosts that support deployment environment variables, set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to require configuration before allowing access. Keep the values in your host's secret settings.
+
 ## How it thinks
 
 ### Explainable matches, without an API
@@ -153,7 +164,9 @@ These are broad illustrative factors. Real footprints vary with materials, manuf
 
 ## Your data, your copy
 
-Working data lives in **Streamlit session state**, with no database or real account. A session ending or server restarting can clear it. Download a backup to keep your ledger and wishlist.
+In **local demo mode**, working data lives in Streamlit session state. A session ending or server restarting can clear it. Download a backup to keep your ledger and wishlist.
+
+With **Google sign-in enabled**, ShopImpact automatically saves the ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to the signed-in account's PostgreSQL workspace. Temporary demo support and return requests, local profile fields, and demo delivery details stay in the current session. A cloud revision check prevents two tabs from silently overwriting each other.
 
 | Tool | What it preserves |
 | :--- | :--- |
@@ -176,7 +189,7 @@ Category names must match the factor table. Dates must use `YYYY-MM-DD` and cann
 
 </details>
 
-Purchases and profile details are not sent to external shopping, support, or AI services. Keep credentials, virtual environments, browser profiles, and private data out of commits.
+Purchases and profile details are not sent to retailers, support teams, or AI services. Account mode stores the workspace in the configured PostgreSQL database. Keep credentials, virtual environments, browser profiles, and private data out of commits.
 
 ## Under the glass
 
@@ -184,6 +197,8 @@ Purchases and profile details are not sent to external shopping, support, or AI 
 | :--- | :--- |
 | Entry point & navigation | `ShopImpactAI.py`, `shopimpact/app.py` |
 | Glass, motion & appearance tokens | `shopimpact/theme.py`, `shopimpact/assets/app.css` |
+| Orbit's 3D renderer | `shopimpact/earth.py`, `shopimpact/assets/earth.js` |
+| Google sign-in and cloud saves | `shopimpact/cloud.py`, `tools/cloud_schema.sql` |
 | Reusable visual components | `shopimpact/ui.py` |
 | Purchase math & catalog | `shopimpact/logic.py`, `shopimpact/catalog.py` |
 | Local recommendation model | `shopimpact/recommendations.py` |
@@ -234,15 +249,6 @@ Ask two people who are new to ShopImpactAI to try the following tasks using demo
 3. Switch between Daylight and Midnight and check whether form fields and selected controls are easy to read.
 
 After each session, record the date, task, whether the tester completed it without help, what they found clear or confusing, and any follow-up change. Use anonymous labels such as Tester A. Ask before including a direct quote.
-
-### Sample ratings
-
-The names below are placeholders. The ratings and comments are fictional examples. Real feedback will be added after the sessions.
-
-| Example | Task | Sample rating | Sample feedback |
-| :--- | :--- | :---: | :--- |
-| Adrian (placeholder) | Log a purchase and find its estimated footprint | 4/5 | “Logging a purchase was easy. I had to look around to find the footprint after I saved it.” |
-| Kavin (placeholder) | Save a Decision Lab plan and find it in Wishlist | 4/5 | “Cost per use made the price easier to judge. A reminder that the plan goes to Wishlist would help.” |
 
 ---
 

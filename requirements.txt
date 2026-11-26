@@ -2,3 +2,5 @@ streamlit>=1.60,<2
 pandas>=2.2,<3
 plotly>=5.24,<7
 Pillow>=10.0,<13
+Authlib>=1.6,<2
+psycopg[binary]>=3.3,<4

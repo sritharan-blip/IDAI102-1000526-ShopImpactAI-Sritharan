@@ -1,11 +1,6 @@
 """ShopImpact app."""
 from __future__ import annotations
 
-import html
-from datetime import date, timedelta
-from uuid import uuid4
-import pandas as pd
-import plotly.express as px
 import streamlit as st
 from .catalog import MONTHLY_CO2_TARGET
 from .navigation import _load_demo_data
@@ -15,6 +10,8 @@ from .marketplace import _render_cart, _render_catalog, _render_help_and_returns
 from .ledger import _render_purchase_view
 from .wishlist import _render_wishlist
 from .theme import apply_custom_css
+from .cloud import account_id, cloud_settings, open_workspace, save_workspace
+from .earth import render_earth, render_earth_background
 
 
 def _keep_appearance_selected() -> None:
@@ -30,6 +27,55 @@ def _keep_appearance_selected() -> None:
 def main() -> None:
     st.set_page_config(page_title="ShopImpact | A little more intentional", page_icon=":material/eco:",
                        layout="wide", initial_sidebar_state="expanded")
+    dsn = cloud_settings()
+    if dsn is None:
+        _render_dashboard()
+        return
+
+    owner = account_id(st.user)
+    if owner is None:
+        _render_sign_in()
+        return
+    open_workspace(dsn, owner)
+
+    with st.sidebar:
+        if st.button("Sign out", icon=":material/logout:", key="account_sign_out", width="stretch"):
+            if save_workspace(dsn, owner, st.empty()):
+                st.logout()
+            st.warning("Your session is open so you can recover any unsaved changes.")
+        if st.session_state.get("_cloud_conflict"):
+            st.error("Cloud sync is paused. Another tab saved a newer version.")
+            if st.button("Discard this tab’s edits and reload from cloud", key="cloud_reload"):
+                st.session_state.clear()
+                st.rerun()
+        else:
+            st.button("Retry cloud save", key="cloud_retry", width="stretch")
+        status = st.empty()
+    # Streamlit's immediate reruns still execute finally, so checkout and restore
+    # changes are saved along with ordinary widget changes.
+    crashed = False
+    try:
+        _render_dashboard()
+    except Exception:
+        crashed = True
+        raise
+    finally:
+        if not crashed:
+            save_workspace(dsn, owner, status)
+
+
+def _render_sign_in() -> None:
+    apply_custom_css(False)
+    render_earth_background("Sign in", False)
+    _, card, _ = st.columns([1, 3.6, 1])
+    with card, st.container(border=True, key="shopimpact_signin"):
+        st.title("Sign in to ShopImpact")
+        st.write("Use your Google account to keep your purchases, wishlist, and goals synced across devices.")
+        st.button("Continue with Google", type="primary", width="stretch", on_click=st.login)
+        render_earth(on_login=True)
+
+
+def _render_dashboard() -> None:
     st.session_state.setdefault("purchases", [])
     st.session_state.setdefault("last_added_id", None)
     st.session_state.setdefault("wishlist", [])
@@ -41,6 +87,9 @@ def main() -> None:
     st.session_state.setdefault("dark_mode", False)
     st.session_state.setdefault("high_contrast", False)
     st.session_state.setdefault("reduce_motion", False)
+    st.session_state.setdefault("appearance", "Daylight")
+    st.session_state.setdefault("monthly_budget", 600.0)
+    st.session_state.setdefault("monthly_target", MONTHLY_CO2_TARGET)
     # Paint the active palette before emitting any interactive UI on each rerun.
     st.session_state.dark_mode = st.session_state.get('appearance', 'Daylight') == 'Midnight'
     apply_custom_css(st.session_state.dark_mode, st.session_state.high_contrast, st.session_state.reduce_motion)
@@ -54,9 +103,9 @@ def main() -> None:
                                        ('Decision lab', 'Open Decision lab'), ('Wishlist', 'Open wishlist')]:
                 st.button(label, key='quick_' + destination, on_click=_navigate_to, args=(destination,), width='stretch')
     with appearance:
-        mode = st.segmented_control("Appearance", ["Daylight", "Midnight"], default="Daylight",
-                                    key="appearance", selection_mode="single", width="stretch",
-                                    on_change=_keep_appearance_selected)
+        st.segmented_control("Appearance", ["Daylight", "Midnight"],
+                             key="appearance", selection_mode="single", width="stretch",
+                             on_change=_keep_appearance_selected)
 
     views = [
         "Overview",
@@ -107,8 +156,8 @@ def main() -> None:
             st.toggle("High contrast", key="high_contrast", help="Strengthens text and border contrast.")
             st.toggle("Reduce motion", key="reduce_motion", help="Pause decorative animations and transitions. Your operating-system preference is also respected.")
         st.markdown("**Your monthly goals**")
-        monthly_budget = st.number_input("Shopping budget ($)", min_value=25.0, max_value=100000.0, value=600.0, step=25.0, key="monthly_budget")
-        monthly_target = st.number_input("CO2e goal (kg)", min_value=1.0, max_value=1000.0, value=MONTHLY_CO2_TARGET, step=1.0, key="monthly_target")
+        monthly_budget = st.number_input("Shopping budget ($)", min_value=25.0, max_value=100000.0, step=25.0, key="monthly_budget")
+        monthly_target = st.number_input("CO2e goal (kg)", min_value=1.0, max_value=1000.0, step=1.0, key="monthly_target")
         st.markdown("**Demo controls**")
         if st.button("Load demo data", icon=":material/auto_awesome:", width="stretch", key="load_demo"):
             _load_demo_data()
@@ -159,6 +208,7 @@ def main() -> None:
         st.caption("Estimates are directional. Commerce, payments, tracking, and support are local demo flows.")
 
     view = st.session_state.view
+    render_earth_background(view, st.session_state.reduce_motion, st.session_state.high_contrast)
     purchases = st.session_state.purchases
     transition_key = f"page_transition_{view.replace(' ', '_').replace('&', 'and')}"
     with st.container(key=transition_key):

@@ -85,12 +85,21 @@ try:
     else:
         raise RuntimeError('Test server did not start')
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel='chrome', headless=True)
+        browser = playwright.chromium.launch(channel='chrome', headless=True,
+                                             args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
         page = browser.new_page(viewport={'width': 1600, 'height': 1100}, device_scale_factor=1)
         page.goto('http://127.0.0.1:8519')
         page.locator('.si-hero').wait_for()
+        backdrop = page.locator('.si-earth-scene[data-ready="true"]')
+        backdrop.wait_for()
+        assert backdrop.get_attribute('data-yaw') == '-0.52'
+        mascot = page.locator('.si-earth-model[data-ready="true"] canvas')
+        mascot.wait_for()
+        mascot.focus()
+        mascot.press('ArrowRight')
         page.get_by_role('button', name='Load demo data', exact=True).click()
         page.locator('.si-hero small').filter(has_text='9 purchases').wait_for()
+        page.locator('.si-earth-card[data-mood="hazy"]').wait_for()
         page.evaluate(AUDIT)
         assert page.locator('.si-float-card').count() == 3
         assert page.locator('.si-hero').evaluate('(e)=>getComputedStyle(e).backdropFilter') != 'none'
@@ -101,6 +110,7 @@ try:
         capture(page, 'midnight-overview')
         page.get_by_text('Discover products', exact=True).click()
         page.get_by_text('Your smart matches', exact=True).wait_for()
+        page.locator('.si-earth-scene[data-ready="true"][data-yaw="0.47"]').wait_for()
         healthy(page)
         assert not page.evaluate('window.auditContrast()'), page.evaluate('window.auditContrast()')
         capture(page, 'midnight-discover')

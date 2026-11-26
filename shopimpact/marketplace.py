@@ -21,6 +21,8 @@ def _render_catalog(purchases: list[dict]) -> None:
 
     # Read the profile preference before using purchase history for recommendations.
     profile = st.session_state.get("profile") or {}
+    if st.session_state.get("_cloud_owner"):
+        profile = {"personalization": st.session_state.get("account_personalization", True)}
     with st.container(border=True):
         st.markdown("### A better fit for your everyday")
         intent = st.text_input("Describe what you need", placeholder="A repairable laptop for studying, or a refill for home…", key="match_intent", max_chars=200)
@@ -214,7 +216,7 @@ def _render_cart() -> None:
             )
     with action_col:
         st.markdown("### Ready when you are")
-        if not st.session_state.get("profile"):
+        if not (st.session_state.get("profile") or st.session_state.get("_cloud_owner")):
             st.info("Set up a local demo profile before checkout.")
             st.button("Set up profile", type="primary", on_click=_navigate_to, args=("Profile",), key="cart_profile")
         else:
@@ -284,6 +286,19 @@ def _render_cart() -> None:
 
 
 def _render_profile() -> None:
+    if st.session_state.get("_cloud_owner"):
+        st.title("Your ShopImpact account")
+        st.text(st.user.get("name", "Google account"))
+        st.caption("Your ledger, wishlist, goals, and display choices save to your cloud workspace.")
+        st.session_state.setdefault("_account_personalization_widget", st.session_state.get("account_personalization", True))
+
+        def update_personalization() -> None:
+            # Keep the preference after Streamlit removes the Profile widget when navigating away.
+            st.session_state.account_personalization = st.session_state._account_personalization_widget
+
+        st.checkbox("Use my purchase history to personalize local recommendations",
+                    key="_account_personalization_widget", on_change=update_personalization)
+        return
     st.markdown('<div class="si-kicker">Your local profile</div>', unsafe_allow_html=True)
     st.title("Make this space yours.")
     st.caption("No password or payment details are stored. This profile lives in the current Streamlit session only; it is not a real account.")
@@ -337,7 +352,9 @@ def _render_orders() -> None:
             header_cols = st.columns([2, 1])
             with header_cols[0]:
                 st.markdown(f"### {order_id}")
-                st.caption(f"Placed {order.get('created_on', '')} · {order.get('city', '')} {order.get('postal_code', '')}")
+                delivery = " ".join(filter(None, (order.get("city"), order.get("postal_code"))))
+                placed = f"Placed {order.get('created_on', '')}"
+                st.caption(f"{placed} · {delivery}" if delivery else placed)
             with header_cols[1]:
                 st.metric("Demo status", stages[min(int(order.get("status_index", 0)), len(stages) - 1)])
             status_index = min(int(order.get("status_index", 0)), len(stages) - 1)
@@ -377,7 +394,7 @@ def _render_orders() -> None:
 def _render_help_and_returns() -> None:
     st.markdown('<div class="si-kicker">Help & care</div>', unsafe_allow_html=True)
     st.title("Here for the whole journey.")
-    st.caption("Returns and customer-care requests are recorded locally for this demo. They are not sent to a retailer or support team.")
+    st.caption("Demo returns and customer-care requests stay in the current session. They are not sent to a retailer or support team.")
     returns_tab, support_tab = st.tabs(["Returns & exchanges", "Customer support"])
     with returns_tab:
         orders = st.session_state.setdefault("orders", [])

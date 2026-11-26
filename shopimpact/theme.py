@@ -33,7 +33,6 @@ def apply_custom_css(dark_mode: bool, high_contrast: bool = False, reduce_motion
     css = (Path(__file__).parent / 'assets' / 'app.css').read_text(encoding='utf-8')
     motion = '*,:before,:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' if reduce_motion else ''
     st.html(f'<style>:root{{{variables};color-scheme:{"dark" if dark_mode else "light"}}}{css}{motion}</style>')
-    st.html('<div class="si-ambient" aria-hidden="true"><i></i><i></i><i></i></div>')
 
 
 def _plot_layout(dark_mode: bool) -> dict:

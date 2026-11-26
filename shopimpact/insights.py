@@ -13,6 +13,7 @@ from .catalog import CAR_EMISSIONS_KG_PER_MILE, CATEGORIES, ECO_TIPS, LOW_IMPACT
 from .logic import _make_monthly_report, _month_end_forecast, _month_end_spend_forecast, _monthly_frame, _purchase_frame, _weekly_green_challenge, calculate_impact, check_badges, get_alternatives
 from .navigation import _navigate_to
 from .theme import _plot_layout
+from .earth import render_earth
 
 
 def _render_overview(
@@ -37,6 +38,7 @@ def _render_overview(
     cta_right.button("Discover your next favorite", icon=":material/storefront:", on_click=_navigate_to, args=("Discover",), key="overview_discover", width="stretch")
     cta_swap.button("Try Decision lab", icon=":material/auto_awesome:", on_click=_navigate_to, args=("Decision lab",), key="overview_swap", width="stretch")
     cta_wishlist.button("Your mindful wishlist", icon=":material/bookmark:", on_click=_navigate_to, args=("Wishlist",), key="overview_wishlist", width="stretch")
+    render_earth(month_co2, monthly_target, not month_frame.empty, st.session_state.reduce_motion)
     render_ticker()
 
     st.markdown('<div class="si-section-label">This month at a glance</div>', unsafe_allow_html=True)
