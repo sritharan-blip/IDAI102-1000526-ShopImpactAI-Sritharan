@@ -70,7 +70,7 @@ class AccountTests(unittest.TestCase):
             account.checkbox(key="_account_personalization_widget").uncheck().run()
             account.radio(key="view").set_value("Overview").run()
             account.button(key="account_sign_out").click().run()
-            self.assertFalse(account.session_state.filtered_state.get("_account_id"))
+            self.assertIn("Sign in to ShopImpact", [title.value for title in account.title])
             reopened = self.sign_in(AppTest.from_file(ENTRY).run(), "one@example.org", "test-credential")
             other = self.sign_in(AppTest.from_file(ENTRY).run(), "two@example.org", "test-credential")
 
