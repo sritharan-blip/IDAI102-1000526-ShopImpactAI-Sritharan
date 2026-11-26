@@ -4,7 +4,6 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 import os
-from time import time
 
 import streamlit as st
 
@@ -20,8 +19,12 @@ class SaveConflict(Exception):
     """A newer revision was saved by another session."""
 
 
+class CloudConfigurationError(Exception):
+    """This deployment requires credentials that haven't been configured."""
+
+
 def cloud_settings():
-    """Use demo mode locally unless account mode is requested or secrets are present."""
+    """Allow the demo when no account configuration is present."""
     required = os.environ.get("SHOPIMPACT_REQUIRE_ACCOUNT") == "1"
     try:
         auth = st.secrets.get("auth", {})
@@ -33,8 +36,7 @@ def cloud_settings():
     if (not all(auth.get(key) for key in ("client_id", "client_secret", "cookie_secret", "redirect_uri"))
             or auth.get("server_metadata_url") != GOOGLE_METADATA
             or not database.get("dsn")):
-        st.error("Google sign-in and cloud storage still need to be configured for this deployment.")
-        st.stop()
+        raise CloudConfigurationError
     return database["dsn"]
 
 
@@ -42,8 +44,10 @@ def account_id(user) -> str | None:
     # Google guarantees the subject is stable for an account. An email address can change.
     if not user.is_logged_in or user.get("iss") not in GOOGLE_ISSUERS:
         return None
-    subject, expires = user.get("sub"), user.get("exp")
-    if not isinstance(subject, str) or not subject or not isinstance(expires, (int, float)) or not expires > time():
+    # Streamlit restores the verified identity from its signed browser cookie.
+    # The provider token is used at login, not as a credential for later database requests.
+    subject = user.get("sub")
+    if not isinstance(subject, str) or not subject:
         return None
     return sha256(f"google:{subject}".encode("utf-8")).hexdigest()
 

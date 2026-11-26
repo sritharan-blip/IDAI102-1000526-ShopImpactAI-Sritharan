@@ -65,9 +65,11 @@ def render_earth(estimate: float = 0, goal: float = 1, has_purchases: bool = Fal
         '<div class="si-earth-copy"><div class="si-kicker">EARTH MASCOT</div>'
         '<h2>Meet Orbit</h2>'
         f'<p class="si-earth-status">{label}</p><p>{detail}</p>'
-        '<p class="si-earth-help">Drag or use arrow keys to spin.</p></div>'
+        '<p class="si-earth-help">Drag to spin. Double-tap to celebrate.</p></div>'
         f'<div class="si-earth-model" data-mood="{mood}" data-reduce="{int(reduce_motion)}">'
-        '<canvas width="300" height="300" tabindex="0" aria-label="Rotate Orbit with the arrow keys"></canvas>'
+        '<canvas width="300" height="300" tabindex="0" '
+        'aria-label="Rotate Orbit with the arrow keys. Press Enter or Space to celebrate."></canvas>'
+        '<span class="si-earth-confetti" aria-hidden="true"></span>'
         '<span class="si-earth-fallback" role="img" aria-label="Earth">🌍</span>'
         '</div></section>'
         f'<script>{_earth_script()}</script>',

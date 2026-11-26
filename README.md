@@ -42,7 +42,7 @@ Track what you spend. Explore your estimated footprint. Find products that fit y
 | A clearer view | What you can do |
 | :--- | :--- |
 | **Liquid glass, two ways** | Frosted layers, floating data cards, and a Daylight / Midnight palette. The 3D Earth backdrop turns to a distinct angle on each page. |
-| **Orbit, your Earth mascot** | Spin a 3D mini Earth by dragging or using the arrow keys. Its expression, colors, and haze react as this month's estimated footprint approaches or exceeds your goal. |
+| **Orbit, your Earth mascot** | Drag the mini Earth to spin it and double-tap to make it celebrate. Its expression, colors, and haze react as this month's estimated footprint approaches or exceeds your goal. |
 | **Your impact, in motion** | Follow monthly spending, category estimates, lower-impact choices, goals, and your recent activity. The hero cards use your actual session data. |
 | **Smart matches** | Describe what you need. A local content model ranks the demo catalog by text similarity, category, budget, and estimated reduction, with reasons for every pick. |
 | **Decision lab** | Explore cost per use and budget fit. Save a pause plan to your wishlist for tomorrow, three days, or next week. |
@@ -77,7 +77,7 @@ Track what you spend. Explore your estimated footprint. Find products that fit y
 
 ## Run locally
 
-Requires **Python 3.10 or later**. Local demo mode runs without API keys or Streamlit secrets.
+Requires **Python 3.10 or later**. Choose **Explore the demo** on the sign-in screen to try an unconfigured local app without API keys or Streamlit secrets.
 
 <details open>
 <summary><strong>Windows PowerShell</strong></summary>
@@ -126,7 +126,7 @@ For Streamlit Community Cloud, select this repository, the `main` branch, and `S
 4. Copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into the deployed app's **Settings → Secrets**, or into the ignored `.streamlit/secrets.toml` for local testing. Fill in the Google client ID and secret, the Postgres connection string, and a random cookie secret generated with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
 5. Restart the app. Sign in, add a purchase, then reopen the app in a fresh session to check that your data returns. Sign in with a second test account to verify it opens its own workspace.
 
-The app enables the sign-in screen once configured. On hosts that support deployment environment variables, set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to require configuration before allowing access. Keep the values in your host's secret settings.
+The sign-in screen is shown to new visitors. After signing in, returning users go directly to their workspace in the same browser while Streamlit's 30-day sign-in cookie is active. Signing out clears the cookie. On hosts that support deployment environment variables, set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo option when credentials are missing. Keep the values in your host's secret settings.
 
 ## How it thinks
 

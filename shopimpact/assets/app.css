@@ -207,6 +207,22 @@ hr{border-color:var(--si-border)!important;opacity:.5}
 .si-earth-card canvas:focus-visible {outline:2px solid var(--si-accent);outline-offset:-4px;border-radius:50%}
 .si-earth-card .si-earth-fallback {position:absolute;font-size:clamp(3.25rem,13vw,10rem);pointer-events:none}
 .si-earth-card [data-ready="true"] .si-earth-fallback {display:none}
+.si-earth-confetti {
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:#ffe273;
+  text-shadow:0 1px 5px #1827489c;z-index:1;
+}
+.si-earth-confetti i {
+  grid-area:1/1;font-size:1.45rem;font-style:normal;opacity:.95;
+  transform:translate(var(--dx),var(--dy));
+  animation:si-earth-confetti 900ms ease-out both;
+}
+.si-earth-confetti i:nth-child(3n+2) {color:#91e7ff}
+.si-earth-confetti i:nth-child(3n+3) {color:#8bf5b3}
+@keyframes si-earth-confetti {
+  0% {opacity:0;transform:translate(0,0) scale(.25)}
+  22% {opacity:1}
+  100% {opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.25)}
+}
 .st-key-shopimpact_signin {margin:clamp(1.25rem,8vh,5rem) auto 0}
 @media(max-width:650px) {
   .si-earth-scene {width:min(71vw,47vh);right:0;bottom:2vh}

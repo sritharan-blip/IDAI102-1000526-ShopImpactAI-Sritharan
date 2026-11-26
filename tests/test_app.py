@@ -14,6 +14,8 @@ class AppTests(unittest.TestCase):
     def app(self):
         app = AppTest.from_file(ENTRY, default_timeout=30).run()
         self.assertEqual(list(app.exception), [])
+        app.button(key='start_demo').click().run()
+        self.assertEqual(list(app.exception), [])
         return app
 
     def test_all_views_in_both_themes(self):
