@@ -242,16 +242,16 @@ Rebuild the animated cover with `python tools/generate_banner.py`.
 
 ## Classmate feedback
 
-I’m asking six classmates to try ShopImpactAI and tell me where it makes a shopping decision easier or where they get stuck. These sample recommendations give each person a starting point to confirm or refine. Their ratings and feedback will be added after testing.
+I’m asking six classmates to try ShopImpactAI and tell me where it makes a shopping decision easier or where they get stuck. These sample recommendations give each person a starting point to confirm or refine. Adrian and Kavin are listed for review, and the other four names are placeholders. Review dates and responses are pending.
 
-| Reviewer | Example recommendation to review | Feature I implemented |
-| :--- | :--- | :--- |
-| Classmate 1 | I’d like to log something I bought and see its footprint without doing the math. | Log a purchase calculates an estimated footprint from the category and price. |
-| Classmate 2 | I want to see which category makes up the biggest part of my footprint. | Impact analytics shows estimated CO₂e by category. |
-| Classmate 3 | Before buying something new, I’d like to see a lower-impact option and compare the estimates. | Swap studio compares alternative scenarios and lets you save a swap. |
-| Classmate 4 | I’d like to see what something would cost each time I use it and give myself a few days to think. | Decision lab calculates cost per use and saves a pause plan with a revisit date in Wishlist. |
-| Classmate 5 | If I describe what I’m looking for, I’d like to know why the app picked a certain product. | Discover uses shopping intent and filters to suggest catalog items and explain the matches. |
-| Classmate 6 | I’d like the Earth mascot to help me tell when I’m close to my monthly footprint goal. | Orbit changes its expression, colors, and haze based on the recorded monthly estimate and goal. |
+| Reviewer | Review date | Example recommendation to review | Feature I implemented |
+| :--- | :--- | :--- | :--- |
+| Adrian | Pending | I’d like to log something I bought and see its footprint without doing the math. | Log a purchase calculates an estimated footprint from the category and price. |
+| Kavin | Pending | I want to see which category makes up the biggest part of my footprint. | Impact analytics shows estimated CO₂e by category. |
+| Rohan (sample) | Pending | Before buying something new, I’d like to see a lower-impact option and compare the estimates. | Swap studio compares alternative scenarios and lets you save a swap. |
+| Diya (sample) | Pending | I’d like to see what something would cost each time I use it and give myself a few days to think. | Decision lab calculates cost per use and saves a pause plan with a revisit date in Wishlist. |
+| Nikhil (sample) | Pending | If I describe what I’m looking for, I’d like to know why the app picked a certain product. | Discover uses shopping intent and filters to suggest catalog items and explain the matches. |
+| Meera (sample) | Pending | I’d like the Earth mascot to help me tell when I’m close to my monthly footprint goal. | Orbit changes its expression, colors, and haze based on the recorded monthly estimate and goal. |
 
 The [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) has one task per reviewer and space for ratings, comments, and changes made after testing.
 
