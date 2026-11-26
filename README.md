@@ -13,7 +13,7 @@ A personal impact studio for the space between **wanting something** and **choos
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.60%2B-7450DA?style=flat-square)
 ![Local recommendations](https://img.shields.io/badge/Recommendations-TF--IDF-117D78?style=flat-square)
 
-[The experience](#the-experience) · [Run locally](#run-locally) · [How it thinks](#how-it-thinks) · [Under the glass](#under-the-glass) · [Usability testing](#usability-testing)
+[The experience](#the-experience) · [Run locally](#run-locally) · [How it thinks](#how-it-thinks) · [Under the glass](#under-the-glass) · [Classmate feedback](#classmate-feedback)
 
 </div>
 
@@ -240,17 +240,20 @@ python tests/browser_smoke.py
 
 Rebuild the animated cover with `python tools/generate_banner.py`.
 
-## Usability testing
+## Classmate feedback
 
-**Status:** Real-user sessions are pending.
+I’m asking six classmates to try ShopImpactAI and tell me where it makes a shopping decision easier or where they get stuck. These sample recommendations give each person a starting point to confirm or refine. Adrian and Kavin are listed for review, and the other four names are placeholders. Review dates and responses are pending.
 
-Ask two people who are new to ShopImpactAI to try the following tasks using demo data. Give them the task goal and note where they hesitate or ask for help.
+| Reviewer | Review date | Example recommendation to review | Feature I implemented |
+| :--- | :--- | :--- | :--- |
+| Adrian | Pending | I’d like to log something I bought and see its footprint without doing the math. | Log a purchase calculates an estimated footprint from the category and price. |
+| Kavin | Pending | I want to see which category makes up the biggest part of my footprint. | Impact analytics shows estimated CO₂e by category. |
+| Rohan (sample) | Pending | Before buying something new, I’d like to see a lower-impact option and compare the estimates. | Swap studio compares alternative scenarios and lets you save a swap. |
+| Diya (sample) | Pending | I’d like to see what something would cost each time I use it and give myself a few days to think. | Decision lab calculates cost per use and saves a pause plan with a revisit date in Wishlist. |
+| Nikhil (sample) | Pending | If I describe what I’m looking for, I’d like to know why the app picked a certain product. | Discover uses shopping intent and filters to suggest catalog items and explain the matches. |
+| Meera (sample) | Pending | I’d like the Earth mascot to help me tell when I’m close to my monthly footprint goal. | Orbit changes its expression, colors, and haze based on the recorded monthly estimate and goal. |
 
-1. Log a sample purchase and find its estimated footprint.
-2. Use Decision lab to estimate cost per use, then save the purchase idea and find its revisit date in Wishlist.
-3. Switch between Daylight and Midnight and check whether form fields and selected controls are easy to read.
-
-After each session, record the date, task, whether the tester completed it without help, what they found clear or confusing, and any follow-up change. Use anonymous labels such as Tester A. Ask before including a direct quote.
+The [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) has one task per reviewer and space for ratings, comments, and changes made after testing.
 
 ---
 
