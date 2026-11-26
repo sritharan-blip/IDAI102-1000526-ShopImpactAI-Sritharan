@@ -118,15 +118,13 @@ Open the local address printed in your terminal, usually `http://localhost:8501`
 
 For Streamlit Community Cloud, select this repository, the `main` branch, and `ShopImpactAI.py` as the main file.
 
-### Enable Google sign-in and cloud saves
+### Enable email accounts and cloud saves
 
-1. In [Google Auth Platform](https://console.cloud.google.com/auth/overview), configure an external app audience and create a **Web application** OAuth client. If the app is in testing, add the Google accounts that should be able to sign in.
-2. Add your exact callback URL under **Authorized redirect URIs**. For example, use `https://YOUR-APP.streamlit.app/oauth2callback` for Streamlit Community Cloud or `http://localhost:8501/oauth2callback` for local testing. Use the same value in the app's secrets.
-3. Create a hosted PostgreSQL database with a TLS certificate trusted by the system. Run [`tools/cloud_schema.sql`](tools/cloud_schema.sql) in its SQL editor. Give the app's dedicated database role `SELECT`, `INSERT`, and `UPDATE` on `shopimpact_workspaces`.
-4. Copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into the deployed app's **Settings → Secrets**, or into the ignored `.streamlit/secrets.toml` for local testing. Fill in the Google client ID and secret, the Postgres connection string, and a random cookie secret generated with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
-5. Restart the app. Sign in, add a purchase, then reopen the app in a fresh session to check that your data returns. Sign in with a second test account to verify it opens its own workspace.
+1. Set up a hosted PostgreSQL database. Run [`tools/cloud_schema.sql`](tools/cloud_schema.sql) as the database owner. Give the dedicated runtime role `USAGE` on the `shopimpact_private` schema and `SELECT`, `INSERT`, and `UPDATE` on its tables. Keep that schema outside any public data API.
+2. Copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into **Settings → Secrets** on the deployed app. Enter the dedicated role's connection string. If your provider supplies its own database CA certificate, enter its PEM text as `ca_certificate` so the server can verify the connection. Supabase users should use the **Session pooler** connection details.
+3. Restart the app. Create a test account and add a purchase. Sign in again in a fresh session to check that the purchase returns, then use a second test account to verify that it opens its own workspace.
 
-The sign-in screen is shown to new visitors. After signing in, returning users go directly to their workspace in the same browser while Streamlit's 30-day sign-in cookie is active. Signing out clears the cookie. On hosts that support deployment environment variables, set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo option when credentials are missing. Keep the values in your host's secret settings.
+Visitors create an account with a name, email, and password. The database stores a salted scrypt password hash. Sign-in lasts for the current browser session. Your account and workspace remain available the next time you sign in. Set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo option when account storage is missing.
 
 ## How it thinks
 
@@ -166,7 +164,7 @@ These are broad illustrative factors. Real footprints vary with materials, manuf
 
 In **local demo mode**, working data lives in Streamlit session state. A session ending or server restarting can clear it. Download a backup to keep your ledger and wishlist.
 
-With **Google sign-in enabled**, ShopImpact automatically saves the ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to the signed-in account's PostgreSQL workspace. Temporary demo support and return requests, local profile fields, and demo delivery details stay in the current session. A cloud revision check prevents two tabs from silently overwriting each other.
+With **account storage enabled**, ShopImpact automatically saves the ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to the signed-in account's PostgreSQL workspace. Temporary demo support and return requests, local profile fields, and demo delivery details stay in the current session. A cloud revision check prevents two tabs from silently overwriting each other.
 
 | Tool | What it preserves |
 | :--- | :--- |
@@ -198,7 +196,7 @@ Purchases and profile details are not sent to retailers, support teams, or AI se
 | Entry point & navigation | `ShopImpactAI.py`, `shopimpact/app.py` |
 | Glass, motion & appearance tokens | `shopimpact/theme.py`, `shopimpact/assets/app.css` |
 | Orbit's 3D renderer | `shopimpact/earth.py`, `shopimpact/assets/earth.js` |
-| Google sign-in and cloud saves | `shopimpact/cloud.py`, `tools/cloud_schema.sql` |
+| Account sign-in and cloud saves | `shopimpact/accounts.py`, `shopimpact/cloud.py`, `tools/cloud_schema.sql` |
 | Reusable visual components | `shopimpact/ui.py` |
 | Purchase math & catalog | `shopimpact/logic.py`, `shopimpact/catalog.py` |
 | Local recommendation model | `shopimpact/recommendations.py` |

@@ -288,7 +288,7 @@ def _render_cart() -> None:
 def _render_profile() -> None:
     if st.session_state.get("_cloud_owner"):
         st.title("Your ShopImpact account")
-        st.text(st.user.get("name", "Google account"))
+        st.text(st.session_state.get("_account_name", "ShopImpact account"))
         st.caption("Your ledger, wishlist, goals, and display choices save to your cloud workspace.")
         st.session_state.setdefault("_account_personalization_widget", st.session_state.get("account_personalization", True))
 
