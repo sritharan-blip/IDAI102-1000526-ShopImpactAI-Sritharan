@@ -99,7 +99,7 @@ try:
         mascot.press('ArrowRight')
         page.get_by_role('button', name='Load demo data', exact=True).click()
         page.locator('.si-hero small').filter(has_text='9 purchases').wait_for()
-        page.locator('.si-earth-card[data-mood="hazy"]').wait_for()
+        page.locator('.si-earth-card').get_by_text('kg CO₂e estimated this month', exact=False).wait_for()
         page.evaluate(AUDIT)
         assert page.locator('.si-float-card').count() == 3
         assert page.locator('.si-hero').evaluate('(e)=>getComputedStyle(e).backdropFilter') != 'none'
