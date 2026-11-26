@@ -84,6 +84,7 @@ function defineEarth(tag) {
     uniform float mood;
     uniform float backdrop;
     uniform bool satellite;
+    uniform float cheer;
     const float PI = 3.14159265;
 
     float blob(vec2 delta, vec2 size) {
@@ -91,7 +92,7 @@ function defineEarth(tag) {
     }
 
     void main() {
-      float bob = sin(time * 1.5) * .018 * (1. - backdrop);
+      float bob = (sin(time * 1.5) * .018 + cheer * .13) * (1. - backdrop);
       vec2 p = (plane - vec2(0., bob)) / mix(.73, .86, backdrop);
       float radius = length(p);
       vec3 blueAir = vec3(.24, .77, 1.);
@@ -141,6 +142,7 @@ function defineEarth(tag) {
       }
 
       // Eyes and mouth sit on the lit face of the sphere so the pet remains readable while spinning.
+      float expression = mix(mood, 0., cheer);
       vec2 face = p - vec2(sin(turn.x) * .055, .06);
       float blinkPhase = mod(time + 2., 4.7) - 3.7;
       float blink = 1. - .94 * exp(-145. * blinkPhase * blinkPhase);
@@ -150,11 +152,11 @@ function defineEarth(tag) {
       color = mix(color, ink, blob(eye, vec2(.094, .118 * blink)));
       color = mix(color, vec3(.95, 1., 1.), blob(eye - vec2(-.026, .043 * blink), vec2(.027, .027 * blink)));
       color = mix(color, vec3(.55, .84, .98), blob(eye - vec2(.035, -.038 * blink), vec2(.014, .014 * blink)) * .82);
-      float smile = -.27 + mix(2.25, -1.8, mood) * face.x * face.x + mood * .065;
+      float smile = -.27 + mix(2.25, -1.8, expression) * face.x * face.x + expression * .065;
       float mouth = (1. - smoothstep(.024, .034, abs(face.y - smile))) * (1. - smoothstep(.156, .179, abs(face.x)));
       color = mix(color, ink, mouth);
       float brow = .202 + .42 * eye.x;
-      float concern = blob(vec2(eye.x, face.y - brow), vec2(.10, .024)) * smoothstep(.42, .85, mood);
+      float concern = blob(vec2(eye.x, face.y - brow), vec2(.10, .024)) * smoothstep(.42, .85, expression);
       color = mix(color, ink, concern);
       gl_FragColor = vec4(color, 1.);
     }`;
@@ -193,13 +195,15 @@ function defineEarth(tag) {
     const turn = gl.getUniformLocation(program, "turn");
     const time = gl.getUniformLocation(program, "time");
     const mood = gl.getUniformLocation(program, "mood");
+    const cheer = gl.getUniformLocation(program, "cheer");
     gl.uniform1f(gl.getUniformLocation(program, "backdrop"), Number(isBackground));
     gl.uniform1i(gl.getUniformLocation(program, "satellite"), Number(Boolean(satelliteImage)));
-    let angle = 0, pitch = 0, clock = 0, level = 0;
+    let angle = 0, pitch = 0, clock = 0, level = 0, bounce = 0;
     function paint() {
       gl.uniform2f(turn, angle, pitch);
       gl.uniform1f(time, clock);
       gl.uniform1f(mood, level);
+      gl.uniform1f(cheer, bounce);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     function updateResolution() {
@@ -217,11 +221,12 @@ function defineEarth(tag) {
     const resize = new ResizeObserver(updateResolution);
     resize.observe(canvas);
     return {
-      draw(yaw, tilt, elapsed, moodLevel) {
+      draw(yaw, tilt, elapsed, moodLevel, joy = 0) {
         angle = yaw;
         pitch = tilt;
         clock = elapsed;
         level = moodLevel;
+        bounce = joy;
         paint();
       },
       release() {
@@ -261,8 +266,34 @@ function defineEarth(tag) {
       let elapsed = 0;
       let lastTime = 0;
       let pointer;
-      const draw = () => this.renderer.draw(yaw, tilt, elapsed, level);
+      let lastTap;
+      let celebrationStarted = -Infinity;
       const reduced = () => media.matches || this.dataset.reduce === "1";
+      const draw = () => {
+        const progress = Math.min((performance.now() - celebrationStarted) / 950, 1);
+        const joy = reduced() ? 0 : Math.pow(Math.sin(progress * Math.PI), 1.4);
+        const wiggle = joy * Math.sin(progress * Math.PI * 3) * .22;
+        this.renderer.draw(yaw + wiggle, tilt, elapsed, level, joy);
+      };
+      const celebrate = () => {
+        celebrationStarted = performance.now();
+        const burst = this.querySelector(".si-earth-confetti");
+        burst.replaceChildren(...Array.from({length: 9}, (_, index) => {
+          const particle = document.createElement("i");
+          const angle = index / 9 * Math.PI * 2;
+          const distance = index % 2 ? 98 : 72;
+          particle.textContent = index % 3 ? "✦" : "✧";
+          particle.style.setProperty("--dx", `${Math.round(Math.cos(angle) * distance)}px`);
+          particle.style.setProperty("--dy", `${Math.round(Math.sin(angle) * distance)}px`);
+          return particle;
+        }));
+        this.dataset.celebrating = "true";
+        clearTimeout(this.celebrationTimer);
+        this.celebrationTimer = setTimeout(() => {
+          delete this.dataset.celebrating;
+          burst.replaceChildren();
+        }, 950);
+      };
       const run = (now) => {
         const delta = lastTime ? Math.min((now - lastTime) / 1000, .05) : 0;
         lastTime = now;
@@ -279,16 +310,38 @@ function defineEarth(tag) {
         draw();
       };
       canvas.addEventListener("pointerdown", (event) => {
-        pointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, travel: 0 };
         canvas.setPointerCapture(event.pointerId);
       });
       canvas.addEventListener("pointermove", (event) => {
         if (pointer?.id !== event.pointerId) return;
-        adjust((pointer.x - event.clientX) * .017, (event.clientY - pointer.y) * .017);
-        pointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        const dx = event.clientX - pointer.x;
+        const dy = event.clientY - pointer.y;
+        pointer.travel += Math.hypot(dx, dy);
+        adjust(-dx * .017, dy * .017);
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+      });
+      canvas.addEventListener("pointerup", (event) => {
+        if (pointer?.id !== event.pointerId || pointer.travel > 12) {
+          lastTap = undefined;
+          return;
+        }
+        const tap = { time: performance.now(), x: event.clientX, y: event.clientY };
+        if (lastTap && tap.time - lastTap.time <= 380 && Math.hypot(tap.x - lastTap.x, tap.y - lastTap.y) <= 28) {
+          lastTap = undefined;
+          celebrate();
+        } else {
+          lastTap = tap;
+        }
       });
       canvas.addEventListener("lostpointercapture", () => { pointer = undefined; });
       canvas.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          if (!event.repeat) celebrate();
+          return;
+        }
         const steps = { ArrowLeft: [-.22, 0], ArrowRight: [.22, 0], ArrowUp: [0, -.16], ArrowDown: [0, .16] };
         if (!(event.key in steps)) return;
         event.preventDefault();
@@ -344,6 +397,7 @@ function defineEarth(tag) {
 
     disconnectedCallback() {
       cancelAnimationFrame(this.raf);
+      clearTimeout(this.celebrationTimer);
       this.visibility?.disconnect();
       this.motionMedia?.removeEventListener("change", this.motionChanged);
       this.renderer?.release();

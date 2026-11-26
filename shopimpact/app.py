@@ -10,7 +10,7 @@ from .marketplace import _render_cart, _render_catalog, _render_help_and_returns
 from .ledger import _render_purchase_view
 from .wishlist import _render_wishlist
 from .theme import apply_custom_css
-from .cloud import account_id, cloud_settings, open_workspace, save_workspace
+from .cloud import CloudConfigurationError, account_id, cloud_settings, open_workspace, save_workspace
 from .earth import render_earth, render_earth_background
 
 
@@ -27,14 +27,21 @@ def _keep_appearance_selected() -> None:
 def main() -> None:
     st.set_page_config(page_title="ShopImpact | A little more intentional", page_icon=":material/eco:",
                        layout="wide", initial_sidebar_state="expanded")
-    dsn = cloud_settings()
+    try:
+        dsn = cloud_settings()
+    except CloudConfigurationError:
+        _render_sign_in(google_enabled=False)
+        return
     if dsn is None:
-        _render_dashboard()
+        if st.session_state.get("_demo_entry"):
+            _render_dashboard()
+        else:
+            _render_sign_in(google_enabled=False, demo_available=True)
         return
 
     owner = account_id(st.user)
     if owner is None:
-        _render_sign_in()
+        _render_sign_in(google_enabled=True)
         return
     open_workspace(dsn, owner)
 
@@ -64,14 +71,22 @@ def main() -> None:
             save_workspace(dsn, owner, status)
 
 
-def _render_sign_in() -> None:
+def _render_sign_in(*, google_enabled: bool, demo_available: bool = False) -> None:
     apply_custom_css(False)
     render_earth_background("Sign in", False)
     _, card, _ = st.columns([1, 3.6, 1])
     with card, st.container(border=True, key="shopimpact_signin"):
         st.title("Sign in to ShopImpact")
         st.write("Use your Google account to keep your purchases, wishlist, and goals synced across devices.")
-        st.button("Continue with Google", type="primary", width="stretch", on_click=st.login)
+        st.button("Continue with Google", type="primary", width="stretch",
+                  disabled=not google_enabled, on_click=st.login)
+        if not google_enabled:
+            st.info("Google sign-in and cloud storage still need to be configured for this deployment.")
+        if demo_available and st.button("Explore the demo", key="start_demo", width="stretch"):
+            st.session_state._demo_entry = True
+            st.rerun()
+        if demo_available:
+            st.caption("Demo changes are kept for this session.")
         render_earth(on_login=True)
 
 

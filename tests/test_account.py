@@ -27,14 +27,24 @@ class AccountTests(unittest.TestCase):
         with patch("shopimpact.app.cloud_settings", return_value="test-dsn"), patch.object(st, "user", GoogleUser(None)):
             app = AppTest.from_file(ENTRY).run()
         self.assertFalse(app.exception)
-        self.assertIn("Continue with Google", [button.label for button in app.button])
+        login = next(button for button in app.button if button.label == "Continue with Google")
+        self.assertFalse(login.disabled)
         self.assertFalse(app.radio)
 
     def test_account_mode_blocks_incomplete_configuration(self):
         with patch.dict(os.environ, {"SHOPIMPACT_REQUIRE_ACCOUNT": "1"}), patch.object(st, "secrets", {}):
             app = AppTest.from_file(ENTRY).run()
-        self.assertIn("need to be configured", app.error[0].value)
+        self.assertIn("need to be configured", app.info[0].value)
+        self.assertTrue(next(button for button in app.button if button.label == "Continue with Google").disabled)
         self.assertFalse(app.radio)
+
+    def test_unconfigured_first_visit_shows_sign_in_with_demo_option(self):
+        with patch.dict(os.environ, {"SHOPIMPACT_REQUIRE_ACCOUNT": "0"}), patch.object(st, "secrets", {}):
+            app = AppTest.from_file(ENTRY).run()
+            self.assertFalse(app.radio)
+            self.assertTrue(next(button for button in app.button if button.label == "Continue with Google").disabled)
+            app.button(key="start_demo").click().run()
+            self.assertEqual(app.radio(key="view").value, "Overview")
 
     def test_reopen_account_and_isolate_another_account(self):
         # Substitute only the storage transport so the app follows its actual session/rerun path.
@@ -71,13 +81,15 @@ class AccountTests(unittest.TestCase):
         self.assertEqual(other.session_state["purchases"], [])
         self.assertEqual(other.number_input(key="monthly_target").value, MONTHLY_CO2_TARGET)
 
-    def test_identity_uses_subject_and_rejects_expired_token(self):
+    def test_cookie_identity_uses_google_subject_across_sessions(self):
         user = GoogleUser("1")
         original = account_id(user)
         self.assertIsNotNone(original)
         user["email"] = "changed@example.com"
         self.assertEqual(account_id(user), original)
         user["exp"] = time() - 1
+        self.assertEqual(account_id(user), original)
+        user["iss"] = "https://example.com"
         self.assertIsNone(account_id(user))
 
     def test_orbit_reacts_to_monthly_goal(self):
