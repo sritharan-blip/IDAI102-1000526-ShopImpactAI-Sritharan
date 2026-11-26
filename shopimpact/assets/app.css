@@ -179,11 +179,12 @@ hr{border-color:var(--si-border)!important;opacity:.5}
 /* The scene sits below cards and form controls and never intercepts the pointer. */
 .stElementContainer:has(.si-earth-scene) {position:absolute;inset:0;pointer-events:none;z-index:-1}
 .si-earth-scene {
-  position:fixed;right:clamp(-370px,-19vw,-150px);bottom:clamp(-430px,-32vw,-240px);
-  display:block;width:clamp(670px,90vw,1500px);aspect-ratio:1;pointer-events:none;opacity:.18;
+  position:fixed;right:clamp(6px,1.4vw,28px);bottom:clamp(8px,3vh,36px);
+  display:block;width:min(clamp(330px,47vw,710px),74vh);aspect-ratio:1;
+  pointer-events:none;opacity:var(--si-earth-opacity);
 }
 .si-earth-scene canvas {display:block;width:100%;height:auto}
-.si-earth-scene[data-contrast="1"] {opacity:.08}
+.si-earth-scene[data-contrast="1"] {opacity:.16}
 
 .si-earth-card {
   position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,310px);
@@ -208,7 +209,7 @@ hr{border-color:var(--si-border)!important;opacity:.5}
 .si-earth-card [data-ready="true"] .si-earth-fallback {display:none}
 .st-key-shopimpact_signin {margin:clamp(1.25rem,8vh,5rem) auto 0}
 @media(max-width:650px) {
-  .si-earth-scene {right:-330px;bottom:-260px;opacity:.14}
+  .si-earth-scene {width:min(71vw,47vh);right:0;bottom:2vh}
 }
 @media(max-width:425px) {
   .si-earth-card {grid-template-columns:1fr;text-align:center;padding:.9rem}

@@ -14,6 +14,17 @@
 
 function defineEarth(tag) {
   let backgroundPose;
+  let surfaceImage;
+
+  function loadEarthSurface() {
+    // The same decoded satellite map is reused when Streamlit replaces the canvas.
+    if (!surfaceImage) {
+      const image = new Image();
+      image.src = "app/static/earth-blue-marble.jpg";
+      surfaceImage = image.decode().then(() => image, () => null);
+    }
+    return surfaceImage;
+  }
 
   const continents = [
     [[-168,63],[-143,72],[-124,72],[-107,78],[-77,74],[-59,54],[-67,48],[-80,43],[-80,26],[-98,19],[-86,11],[-82,8],[-93,15],[-106,23],[-117,33],[-126,48],[-135,56],[-157,59]],
@@ -61,13 +72,18 @@ function defineEarth(tag) {
     }`;
 
   const fragment = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
     precision mediump float;
+    #endif
     varying vec2 plane;
     uniform sampler2D map;
     uniform vec2 turn;
     uniform float time;
     uniform float mood;
     uniform float backdrop;
+    uniform bool satellite;
     const float PI = 3.14159265;
 
     float blob(vec2 delta, vec2 size) {
@@ -76,7 +92,7 @@ function defineEarth(tag) {
 
     void main() {
       float bob = sin(time * 1.5) * .018 * (1. - backdrop);
-      vec2 p = (plane - vec2(0., bob)) / mix(.73, .88, backdrop);
+      vec2 p = (plane - vec2(0., bob)) / mix(.73, .86, backdrop);
       float radius = length(p);
       vec3 blueAir = vec3(.24, .77, 1.);
       vec3 dirtyAir = vec3(.72, .56, .36);
@@ -95,9 +111,10 @@ function defineEarth(tag) {
       vec3 n = vec3(p, sqrt(max(0., 1. - dot(p, p))));
       float tilt = turn.y;
       vec3 globe = vec3(n.x, n.y * cos(tilt) + n.z * sin(tilt), n.z * cos(tilt) - n.y * sin(tilt));
-      vec2 uv = vec2(fract(atan(globe.x, globe.z) / (2. * PI) + .5 + turn.x / (2. * PI)),
+      vec2 uv = vec2(atan(globe.x, globe.z) / (2. * PI) + .5 + turn.x / (2. * PI),
                      .5 - asin(clamp(globe.y, -1., 1.)) / PI);
-      float land = texture2D(map, uv).r;
+      vec3 surface = texture2D(map, uv).rgb;
+      float land = surface.r;
       float flecks = sin(85. * uv.x + 2. * sin(17. * uv.y)) * sin(70. * uv.y + 5. * uv.x);
       float clouds = smoothstep(.55, .95, sin(33. * uv.x + time * .16 + 4. * sin(12. * uv.y))
                                            * sin(37. * uv.y + 4. * uv.x));
@@ -106,6 +123,15 @@ function defineEarth(tag) {
       vec3 color = mix(water, ground, land) + flecks * .038;
       color = mix(color, mix(vec3(.93, .99, 1.), dirtyAir, mood), clouds * (.37 + mood * .29));
       vec3 light = normalize(vec3(-.64, .58, 1.));
+      if (satellite) {
+        // Lift the shaded hemisphere gently while keeping the satellite coastline detail intact.
+        color = pow(surface, vec3(.79));
+        color *= .73 + .40 * max(0., dot(n, light));
+        color += vec3(.025, .105, .21) * pow(1. - n.z, 2.6);
+        color = mix(color, vec3(.88, .96, 1.), clouds * .12);
+        gl_FragColor = vec4(color, 1.);
+        return;
+      }
       color *= .52 + .63 * max(0., dot(n, light));
       color += air * pow(1. - n.z, 2.) * .42;
       color += vec3(.35, .43, .43) * pow(max(0., dot(n, light)), 34.) * .36;
@@ -133,7 +159,7 @@ function defineEarth(tag) {
       gl_FragColor = vec4(color, 1.);
     }`;
 
-  function createRenderer(canvas, isBackground) {
+  function createRenderer(canvas, isBackground, satelliteImage) {
     const gl = canvas.getContext("webgl", { alpha: true, antialias: true, premultipliedAlpha: false });
     if (!gl) return null;
     function shader(type, source) {
@@ -158,24 +184,50 @@ function defineEarth(tag) {
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
     gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, landTexture());
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, satelliteImage ?? landTexture());
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     const turn = gl.getUniformLocation(program, "turn");
     const time = gl.getUniformLocation(program, "time");
     const mood = gl.getUniformLocation(program, "mood");
     gl.uniform1f(gl.getUniformLocation(program, "backdrop"), Number(isBackground));
-    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1i(gl.getUniformLocation(program, "satellite"), Number(Boolean(satelliteImage)));
+    let angle = 0, pitch = 0, clock = 0, level = 0;
+    function paint() {
+      gl.uniform2f(turn, angle, pitch);
+      gl.uniform1f(time, clock);
+      gl.uniform1f(mood, level);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    function updateResolution() {
+      // Size the backing buffer to the actual display pixels, up to a bounded GPU workload.
+      const size = Math.max(1, Math.min(1440, Math.round(
+        canvas.getBoundingClientRect().width * Math.min(devicePixelRatio || 1, 2))));
+      if (canvas.width !== size || canvas.height !== size) {
+        canvas.width = size;
+        canvas.height = size;
+      }
+      gl.viewport(0, 0, size, size);
+      paint();
+    }
+    updateResolution();
+    const resize = new ResizeObserver(updateResolution);
+    resize.observe(canvas);
     return {
-      draw(yaw, tilt, elapsed, level) {
-        gl.uniform2f(turn, yaw, tilt);
-        gl.uniform1f(time, elapsed);
-        gl.uniform1f(mood, level);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      draw(yaw, tilt, elapsed, moodLevel) {
+        angle = yaw;
+        pitch = tilt;
+        clock = elapsed;
+        level = moodLevel;
+        paint();
       },
-      release() { gl.getExtension("WEBGL_lose_context")?.loseContext(); }
+      release() {
+        resize.disconnect();
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+      }
     };
   }
 
@@ -184,17 +236,20 @@ function defineEarth(tag) {
       this.raf = requestAnimationFrame(() => this.mount());
     }
 
-    mount() {
+    async mount() {
       const canvas = this.querySelector("canvas");
       if (!canvas) return;
       const isBackground = this.dataset.background === "1";
+      const satelliteImage = isBackground ? await loadEarthSurface() : null;
+      if (!this.isConnected) return;
       try {
-        this.renderer = createRenderer(canvas, isBackground);
+        this.renderer = createRenderer(canvas, isBackground, satelliteImage);
       } catch (error) {
         console.warn("Orbit could not initialize WebGL", error);
       }
       if (!this.renderer) return;
       this.dataset.ready = "true";
+      if (satelliteImage) this.dataset.texture = "blue-marble";
       const media = matchMedia("(prefers-reduced-motion: reduce)");
       if (isBackground) {
         this.mountBackground(media);
