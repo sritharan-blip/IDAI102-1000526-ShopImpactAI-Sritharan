@@ -1,14 +1,14 @@
-"""Google sign-in and account-scoped workspace persistence."""
+"""Account-scoped workspace persistence."""
 from __future__ import annotations
 
-from hashlib import sha256
+from contextlib import contextmanager
 import json
 import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import streamlit as st
 
-GOOGLE_ISSUERS = {"https://accounts.google.com", "accounts.google.com"}
-GOOGLE_METADATA = "https://accounts.google.com/.well-known/openid-configuration"
 LIST_FIELDS = ("purchases", "wishlist", "comparison_basket", "saved_swaps")
 PREF_FIELDS = ("monthly_budget", "monthly_target", "appearance", "high_contrast", "reduce_motion",
                "account_personalization")
@@ -27,29 +27,14 @@ def cloud_settings():
     """Allow the demo when no account configuration is present."""
     required = os.environ.get("SHOPIMPACT_REQUIRE_ACCOUNT") == "1"
     try:
-        auth = st.secrets.get("auth", {})
         database = st.secrets.get("cloud", {})
     except FileNotFoundError:
-        auth, database = {}, {}
-    if not (required or auth or database):
+        database = {}
+    if not (required or database):
         return None
-    if (not all(auth.get(key) for key in ("client_id", "client_secret", "cookie_secret", "redirect_uri"))
-            or auth.get("server_metadata_url") != GOOGLE_METADATA
-            or not database.get("dsn")):
+    if not database.get("dsn"):
         raise CloudConfigurationError
     return database["dsn"]
-
-
-def account_id(user) -> str | None:
-    # Google guarantees the subject is stable for an account. An email address can change.
-    if not user.is_logged_in or user.get("iss") not in GOOGLE_ISSUERS:
-        return None
-    # Streamlit restores the verified identity from its signed browser cookie.
-    # The provider token is used at login, not as a credential for later database requests.
-    subject = user.get("sub")
-    if not isinstance(subject, str) or not subject:
-        return None
-    return sha256(f"google:{subject}".encode("utf-8")).hexdigest()
 
 
 def workspace(state) -> dict:
@@ -72,17 +57,26 @@ def restore_workspace(state, payload: dict) -> None:
             state[key] = payload[key]
 
 
+@contextmanager
 def _connect(dsn: str):
     import psycopg
 
-    return psycopg.connect(dsn, connect_timeout=5, sslmode="verify-full", sslrootcert="system",
-                           options="-c statement_timeout=5000")
+    database = st.secrets.get("cloud", {})
+    certificate = database.get("ca_certificate", "")
+    with TemporaryDirectory(prefix="shopimpact-db-") as directory:
+        root = "system"
+        if certificate:
+            root = str(Path(directory) / "provider-ca.pem")
+            Path(root).write_text(certificate, encoding="ascii")
+        with psycopg.connect(dsn, connect_timeout=5, sslmode="verify-full", sslrootcert=root,
+                             options="-c statement_timeout=5000") as conn:
+            yield conn
 
 
 def load_workspace(dsn: str, owner: str) -> tuple[int, dict]:
     with _connect(dsn) as conn:
         row = conn.execute(
-            "SELECT revision, payload FROM shopimpact_workspaces WHERE owner = %s",
+            "SELECT revision, payload FROM shopimpact_private.shopimpact_workspaces WHERE owner = %s",
             (owner,),
         ).fetchone()
     return row if row is not None else (0, {})
@@ -93,13 +87,13 @@ def write_workspace(dsn: str, owner: str, revision: int, snapshot: str) -> int:
     with _connect(dsn) as conn:
         if revision == 0:
             result = conn.execute(
-                "INSERT INTO shopimpact_workspaces (owner, revision, payload) VALUES (%s, 1, %s::jsonb) "
+                "INSERT INTO shopimpact_private.shopimpact_workspaces (owner, revision, payload) VALUES (%s, 1, %s::jsonb) "
                 "ON CONFLICT (owner) DO NOTHING RETURNING revision",
                 (owner, snapshot),
             )
         else:
             result = conn.execute(
-                "UPDATE shopimpact_workspaces SET revision = revision + 1, payload = %s::jsonb "
+                "UPDATE shopimpact_private.shopimpact_workspaces SET revision = revision + 1, payload = %s::jsonb "
                 "WHERE owner = %s AND revision = %s RETURNING revision",
                 (snapshot, owner, revision),
             )

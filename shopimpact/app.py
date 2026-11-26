@@ -10,7 +10,8 @@ from .marketplace import _render_cart, _render_catalog, _render_help_and_returns
 from .ledger import _render_purchase_view
 from .wishlist import _render_wishlist
 from .theme import apply_custom_css
-from .cloud import CloudConfigurationError, account_id, cloud_settings, open_workspace, save_workspace
+from .accounts import AccountInputError, authenticate
+from .cloud import CloudConfigurationError, cloud_settings, open_workspace, save_workspace
 from .earth import render_earth, render_earth_background
 
 
@@ -30,30 +31,34 @@ def main() -> None:
     try:
         dsn = cloud_settings()
     except CloudConfigurationError:
-        _render_sign_in(google_enabled=False)
+        _render_sign_in(None)
         return
     if dsn is None:
         if st.session_state.get("_demo_entry"):
             _render_dashboard()
         else:
-            _render_sign_in(google_enabled=False, demo_available=True)
+            _render_sign_in(None, demo_available=True)
         return
 
-    owner = account_id(st.user)
+    owner = st.session_state.get("_account_id")
     if owner is None:
-        _render_sign_in(google_enabled=True)
+        _render_sign_in(dsn)
         return
     open_workspace(dsn, owner)
 
     with st.sidebar:
         if st.button("Sign out", icon=":material/logout:", key="account_sign_out", width="stretch"):
             if save_workspace(dsn, owner, st.empty()):
-                st.logout()
+                st.session_state.clear()
+                st.rerun()
             st.warning("Your session is open so you can recover any unsaved changes.")
         if st.session_state.get("_cloud_conflict"):
             st.error("Cloud sync is paused. Another tab saved a newer version.")
             if st.button("Discard this tab’s edits and reload from cloud", key="cloud_reload"):
+                name = st.session_state._account_name
                 st.session_state.clear()
+                st.session_state._account_id = owner
+                st.session_state._account_name = name
                 st.rerun()
         else:
             st.button("Retry cloud save", key="cloud_retry", width="stretch")
@@ -71,17 +76,34 @@ def main() -> None:
             save_workspace(dsn, owner, status)
 
 
-def _render_sign_in(*, google_enabled: bool, demo_available: bool = False) -> None:
+def _render_sign_in(dsn: str | None, *, demo_available: bool = False) -> None:
     apply_custom_css(False)
     render_earth_background("Sign in", False)
     _, card, _ = st.columns([1, 3.6, 1])
     with card, st.container(border=True, key="shopimpact_signin"):
         st.title("Sign in to ShopImpact")
-        st.write("Use your Google account to keep your purchases, wishlist, and goals synced across devices.")
-        st.button("Continue with Google", type="primary", width="stretch",
-                  disabled=not google_enabled, on_click=st.login)
-        if not google_enabled:
-            st.info("Google sign-in and cloud storage still need to be configured for this deployment.")
+        mode = st.radio("Account", ["Sign in", "Create account"], horizontal=True, label_visibility="collapsed")
+        registering = mode == "Create account"
+        with st.form("account_credentials", clear_on_submit=True):
+            name = st.text_input("Name", max_chars=80) if registering else None
+            email = st.text_input("Email", max_chars=254)
+            password = st.text_input("Password", type="password", max_chars=128,
+                                     help="Use at least 15 characters and a password unique to ShopImpact." if registering else None)
+            submit = st.form_submit_button(mode, type="primary", width="stretch", disabled=dsn is None)
+        if submit and dsn:
+            try:
+                owner, display_name = authenticate(dsn, email, password, st.context.ip_address, name=name)
+            except AccountInputError as exc:
+                st.error(str(exc))
+            except Exception:
+                st.error("Account storage is unavailable right now. Please try again shortly.")
+            else:
+                st.session_state.clear()
+                st.session_state._account_id = owner
+                st.session_state._account_name = display_name
+                st.rerun()
+        if dsn is None:
+            st.info("Sign-up and sign-in will be available once persistent account storage is connected.")
         if demo_available and st.button("Explore the demo", key="start_demo", width="stretch"):
             st.session_state._demo_entry = True
             st.rerun()
