@@ -23,6 +23,7 @@ PALETTES = {
 
 
 def apply_custom_css(dark_mode: bool, high_contrast: bool = False, reduce_motion: bool = False) -> None:
+    # Copy the palette so accessibility overrides only affect this render.
     palette = dict(PALETTES[dark_mode])
     if high_contrast:
         palette.update(text='#FFFFFF' if dark_mode else '#102019',

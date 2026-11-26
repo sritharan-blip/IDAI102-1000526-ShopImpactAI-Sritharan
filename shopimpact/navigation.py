@@ -15,6 +15,7 @@ def _load_demo_data() -> None:
     today = date.today()
     purchases = []
     for index, (product, category, brand, price, savings) in enumerate(DEMO_ITEMS):
+        # Spread the demo ledger across the current and previous reporting periods.
         purchased_on = today - timedelta(days=index if index < 7 else 35 + index)
         baseline = _new_purchase(product, category, brand, price, purchased_on)
         factor = 0.7 if savings else 1.0

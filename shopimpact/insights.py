@@ -23,6 +23,7 @@ def _render_overview(
 ) -> None:
     today = date.today()
     frame = _purchase_frame(purchases)
+    # Use the same month for spending, impact and the lower-impact purchase count.
     month_frame = _monthly_frame(purchases, today)
     spend = float(month_frame["price"].sum()) if not month_frame.empty else 0.0
     month_co2 = float(month_frame["co2"].sum()) if not month_frame.empty else 0.0

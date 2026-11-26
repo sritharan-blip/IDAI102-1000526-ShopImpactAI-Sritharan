@@ -46,6 +46,7 @@ def recommend_products(query: str = '', purchases: list[dict] | None = None,
     history = (purchases or []) if personalize else []
     history_text = ' '.join(str(p.get('product', '')) + ' ' + str(p.get('category', '')) for p in history[-20:])
     idf, vectors = _model()
+    # A typed request takes precedence over the history-based fallback.
     query_vector = _vector(Counter(_tokens(query or history_text)), idf)
     category_spend = Counter()
     for purchase in history:

@@ -1,5 +1,6 @@
 """Versioned demo catalog and estimation factors (kg CO2e per $10)."""
 
+# Each factor estimates kilograms of CO2e for every $10 spent in the category.
 CATEGORIES = {
     "Electronics": {"factor": 3.5, "level": "High"},
     "Fast fashion / leather": {"factor": 2.8, "level": "High"},

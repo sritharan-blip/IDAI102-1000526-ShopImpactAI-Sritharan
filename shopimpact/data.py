@@ -89,6 +89,7 @@ def _make_data_backup(purchases: list[dict], wishlist: list[dict]) -> bytes:
                       indent=2, ensure_ascii=False, allow_nan=False).encode('utf-8')
 
 
+# The restore caller applies a backup only after the entire file passes validation.
 def _parse_data_backup(uploaded_file) -> tuple[dict | None, list[str]]:
     """Validate atomically, preserving IDs, dates, and recorded estimate snapshots.
 

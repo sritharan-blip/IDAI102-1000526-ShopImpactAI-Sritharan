@@ -9,6 +9,7 @@ VIEWS = ['Overview', 'Discover', 'Decision lab', 'Log purchase', 'Wishlist', 'Ca
          'My orders', 'Impact analytics', 'Swap studio', 'Eco rewards', 'Help & returns', 'Profile']
 
 
+# AppTest exercises the real Streamlit entry point and its widget-driven reruns.
 class AppTests(unittest.TestCase):
     def app(self):
         app = AppTest.from_file(ENTRY, default_timeout=30).run()

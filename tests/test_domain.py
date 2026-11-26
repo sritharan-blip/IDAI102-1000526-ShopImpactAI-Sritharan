@@ -15,6 +15,7 @@ from shopimpact.theme import PALETTES
 from shopimpact.decisions import decision_projection
 
 
+# Exercise the calculation and data helpers directly without running Streamlit.
 class DomainTests(unittest.TestCase):
     def purchase(self, **kwargs):
         return _new_purchase('Phone', 'Electronics', 'Demo', 329, date.today(), **kwargs)

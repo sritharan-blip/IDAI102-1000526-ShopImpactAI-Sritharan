@@ -76,6 +76,7 @@ def _render_wishlist() -> None:
         "Wishlist estimates are not included in your purchase totals."
     )
 
+    # Show ideas ready to revisit before ideas scheduled for a future date.
     ordered = sorted(
         wishlist,
         key=lambda item: (

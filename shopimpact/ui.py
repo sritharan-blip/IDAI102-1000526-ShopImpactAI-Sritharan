@@ -87,6 +87,7 @@ def render_table(data, hide_index=True, column_config=None, alt='Data table', **
                 except (ValueError, TypeError):
                     return value
             formatted[col] = formatted[col].map(display)
+    # Escape cell values because the table can contain user-entered ledger text.
     table = formatted.to_html(index=not hide_index, escape=True, border=0, classes='si-table', na_rep='—')
     st.html(f'<div class="si-table-wrap" role="region" aria-label="{html.escape(alt, quote=True)}" tabindex="0">{table}</div>')
     if total > 500:

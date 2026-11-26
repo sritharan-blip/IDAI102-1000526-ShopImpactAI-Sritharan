@@ -37,6 +37,7 @@ def render_decision_lab(purchases: list[dict]) -> None:
             frequency = st.slider('How often will you use it each week?', 1, 14, 3, key='decision_frequency')
             years = st.select_slider('How many years will you keep it?', [.5, 1.0, 2.0, 3.0, 5.0], value=2.0, key='decision_years')
             st.caption('These are your assumptions. Actual use and durability may differ.')
+    # Compare the proposed purchase with spending in the current month.
     monthly = _monthly_frame(purchases)
     spent = float(monthly['price'].sum()) if not monthly.empty else 0
     budget = float(st.session_state.get('monthly_budget', 600))

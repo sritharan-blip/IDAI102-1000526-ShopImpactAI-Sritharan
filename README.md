@@ -8,12 +8,12 @@
 
 A personal impact studio for the space between **wanting something** and **choosing it well**.
 
-[![App checks](https://github.com/sritharan-blip/ShopImpactAI/actions/workflows/tests.yml/badge.svg)](https://github.com/sritharan-blip/ShopImpactAI/actions/workflows/tests.yml)
+[![App checks](https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan/actions/workflows/tests.yml/badge.svg)](https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan/actions/workflows/tests.yml)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3153D5?style=flat-square)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.60%2B-7450DA?style=flat-square)
 ![Local recommendations](https://img.shields.io/badge/Recommendations-TF--IDF-117D78?style=flat-square)
 
-[The experience](#the-experience) · [Run locally](#run-locally) · [How it thinks](#how-it-thinks) · [Under the glass](#under-the-glass)
+[The experience](#the-experience) · [Run locally](#run-locally) · [How it thinks](#how-it-thinks) · [Under the glass](#under-the-glass) · [Usability testing](#usability-testing)
 
 </div>
 
@@ -82,8 +82,8 @@ Requires **Python 3.10 or later**. No API key or Streamlit secrets are needed.
 <summary><strong>Windows PowerShell</strong></summary>
 
 ```powershell
-git clone https://github.com/sritharan-blip/ShopImpactAI.git
-cd ShopImpactAI
+git clone https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan.git
+cd IDAI102-1000526-ShopImpactAI-Sritharan
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
@@ -103,8 +103,8 @@ If activation is restricted, run the environment's Python directly:
 <summary><strong>macOS / Linux</strong></summary>
 
 ```bash
-git clone https://github.com/sritharan-blip/ShopImpactAI.git
-cd ShopImpactAI
+git clone https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan.git
+cd IDAI102-1000526-ShopImpactAI-Sritharan
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
@@ -191,13 +191,24 @@ Purchases and profile details are not sent to external shopping, support, or AI 
 | Imports & snapshot backups | `shopimpact/data.py` |
 | Feature views | `shopimpact/marketplace.py`, `ledger.py`, `insights.py`, `wishlist.py` |
 | Reproducible animated cover | `tools/generate_banner.py` |
+| Python Turtle animation | [`tools/turtle_demo.py`](tools/turtle_demo.py) |
 
 The interface uses Streamlit and Plotly. pandas handles ledger summaries; Pillow and NumPy generate the self-hosted animated cover. There are no external image servers or API calls behind the app's artwork.
+
+### Python Turtle animation
+
+The desktop animation traces three steps from Decision lab: check the budget, estimate cost per use, and save a pause plan. Run it from the repository root on a computer with Python and Tk installed:
+
+```bash
+python tools/turtle_demo.py
+```
+
+Press **Space** to play or replay and **Esc** to close the window. Python Turtle renders the desktop demo. The Streamlit dashboard uses Plotly for charts, and Pillow generates the README banner.
 
 ### Checks that follow the experience
 
 ```bash
-python -m compileall -q ShopImpactAI.py shopimpact
+python -m compileall -q ShopImpactAI.py shopimpact tools tests
 python -m unittest discover -s tests -v
 ```
 
@@ -211,6 +222,18 @@ python tests/browser_smoke.py
 ```
 
 Rebuild the animated cover with `python tools/generate_banner.py`.
+
+## Usability testing
+
+**Status:** Real-user sessions are pending.
+
+Ask two people who are new to ShopImpactAI to try the following tasks using demo data. Give them the task goal and note where they hesitate or ask for help.
+
+1. Log a sample purchase and find its estimated footprint.
+2. Use Decision lab to estimate cost per use, then save the purchase idea and find its revisit date in Wishlist.
+3. Switch between Daylight and Midnight and check whether form fields and selected controls are easy to read.
+
+After each session, record the date, task, whether the tester completed it without help, what they found clear or confusing, and any follow-up change. Use anonymous labels such as Tester A. Ask before including a direct quote.
 
 ---
 

@@ -92,6 +92,7 @@ def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
             st.session_state.last_added_id = purchase["id"]
             st.toast(f"{product.strip()} added to your impact log.", icon=":material/check_circle:")
 
+    # The saved ID keeps the most recent purchase visible across Streamlit reruns.
     last_id = st.session_state.get("last_added_id")
     last_purchase = next((item for item in reversed(purchases) if item.get("id") == last_id), None)
     if last_purchase:

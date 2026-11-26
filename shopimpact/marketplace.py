@@ -19,6 +19,7 @@ def _render_catalog(purchases: list[dict]) -> None:
     st.title("Find things made to last.")
     st.caption("A curated demo catalog of repairable, reused, refillable, and thoughtfully sourced goods.")
 
+    # Read the profile preference before using purchase history for recommendations.
     profile = st.session_state.get("profile") or {}
     with st.container(border=True):
         st.markdown("### A better fit for your everyday")
