@@ -210,6 +210,8 @@ Purchases and profile details are not sent to retailers, support teams, or AI se
 
 The interface uses Streamlit and Plotly. pandas handles ledger summaries; Pillow and NumPy generate the self-hosted animated cover. There are no external image servers or API calls behind the app's artwork.
 
+The Earth backdrop uses a locally served 2048 × 1024 satellite map from [NASA Earth Observatory's Blue Marble: Next Generation](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/), produced by Reto Stöckli at NASA Goddard Space Flight Center. The [resized JPEG](https://github.com/MaxwellLee/physics-lab/blob/main/assets/textures/SOURCES.md#earth) was prepared by the Physics Lab project.
+
 ### Python Turtle animation
 
 The desktop animation traces three steps from Decision lab: check the budget, estimate cost per use, and save a pause plan. Run it from the repository root on a computer with Python and Tk installed:
