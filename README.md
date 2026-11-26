@@ -237,12 +237,12 @@ After each session, record the date, task, whether the tester completed it witho
 
 ### Sample ratings
 
-These fictional examples show how to record a rating and a suggested improvement. Real feedback will be added after the sessions.
+The names below are placeholders. The ratings and comments are fictional examples. Real feedback will be added after the sessions.
 
 | Example | Task | Sample rating | Sample feedback |
 | :--- | :--- | :---: | :--- |
-| Sample A | Log a purchase and find its estimated footprint | 4/5 | “Logging a purchase was easy. I had to look around to find the footprint after I saved it.” |
-| Sample B | Save a Decision Lab plan and find it in Wishlist | 4/5 | “Cost per use made the price easier to judge. A reminder that the plan goes to Wishlist would help.” |
+| Adrian (placeholder) | Log a purchase and find its estimated footprint | 4/5 | “Logging a purchase was easy. I had to look around to find the footprint after I saved it.” |
+| Kavin (placeholder) | Save a Decision Lab plan and find it in Wishlist | 4/5 | “Cost per use made the price easier to judge. A reminder that the plan goes to Wishlist would help.” |
 
 ---
 
