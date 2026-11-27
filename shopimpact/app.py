@@ -82,6 +82,8 @@ def _render_sign_in(dsn: str | None, *, demo_available: bool = False) -> None:
     _, card, _ = st.columns([1, 3.6, 1])
     with card, st.container(border=True, key="shopimpact_signin"):
         st.title("Sign in to ShopImpact")
+        if dsn is None:
+            st.warning("Account storage is offline. Sign-in and account creation are unavailable until the database is connected.")
         mode = st.radio("Account", ["Sign in", "Create account"], horizontal=True, label_visibility="collapsed")
         registering = mode == "Create account"
         with st.form("account_credentials", clear_on_submit=True):
@@ -102,8 +104,6 @@ def _render_sign_in(dsn: str | None, *, demo_available: bool = False) -> None:
                 st.session_state._account_id = owner
                 st.session_state._account_name = display_name
                 st.rerun()
-        if dsn is None:
-            st.info("Sign-up and sign-in will be available once persistent account storage is connected.")
         if demo_available and st.button("Explore the demo", key="start_demo", width="stretch"):
             st.session_state._demo_entry = True
             st.rerun()

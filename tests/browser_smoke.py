@@ -158,7 +158,9 @@ try:
         width = page.evaluate('({viewport:innerWidth,document:document.documentElement.scrollWidth})')
         assert width['document'] <= width['viewport'] + 2, width
         planet = backdrop.bounding_box()
-        assert planet['x'] >= 0 and planet['x'] + planet['width'] <= width['viewport'] + 1, planet
+        assert planet['x'] < width['viewport'] < planet['x'] + planet['width'], planet
+        visible_globe_width = (width['viewport'] - planet['x'] - .07 * planet['width']) / (.86 * planet['width'])
+        assert .55 <= visible_globe_width <= .65, (planet, visible_globe_width)
         hidden_values = page.locator('.si-hero-art').evaluate('''root=>{
           const cards=[...root.querySelectorAll('.si-float-card')],bad=[];
           cards.forEach((card,i)=>{const a=card.querySelector('strong').getBoundingClientRect();

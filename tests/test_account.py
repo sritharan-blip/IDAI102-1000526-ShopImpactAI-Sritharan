@@ -33,7 +33,7 @@ class AccountTests(unittest.TestCase):
     def test_account_mode_blocks_incomplete_configuration(self):
         with patch.dict(os.environ, {"SHOPIMPACT_REQUIRE_ACCOUNT": "1"}), patch.object(st, "secrets", {}):
             app = AppTest.from_file(ENTRY).run()
-        self.assertIn("persistent account storage", app.info[0].value)
+        self.assertIn("Account storage is offline", app.warning[0].value)
         self.assertTrue(next(button for button in app.button if button.label == "Sign in").disabled)
         self.assertEqual(len(app.radio), 1)
 
