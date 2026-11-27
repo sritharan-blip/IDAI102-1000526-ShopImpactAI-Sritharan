@@ -249,12 +249,12 @@ I’m preparing six usability tests for ShopImpactAI. I listed Adrian and Kavin 
 
 | Reviewer | Review date | What I want to check | Feature I implemented |
 | :--- | :--- | :--- | :--- |
-| Adrian | Pending | I want to check whether I can log a purchase and see its footprint without doing the math. | I calculate an estimated footprint from the category and price in **Log a purchase**. |
-| Kavin | Pending | I want to check how quickly I can find the category with the biggest footprint. | I show estimated CO₂e by category in **Impact analytics**. |
-| Rohan (sample) | Pending | I want to see whether I can compare a purchase with a lower-impact alternative. | I compare scenarios and save alternatives in **Swap studio**. |
-| Diya (sample) | Pending | I want to check whether I can estimate cost per use and give myself time to think. | I calculate cost per use in **Decision lab** and save pause plans with a revisit date in **Wishlist**. |
-| Nikhil (sample) | Pending | I want to check whether I can understand why a product matched my shopping intent. | I show product suggestions and explain the matches in **Discover**. |
-| Meera (sample) | Pending | I want to check whether I can tell from Orbit when I’m close to my monthly footprint goal. | I use Orbit’s expression, colors, and haze to show when my monthly estimate approaches or exceeds my goal. |
+| Adrian | 11.25.26 | I want to check whether I can log a purchase and see its footprint without doing the math. | I calculate an estimated footprint from the category and price in **Log a purchase**. |
+| Kavin | 11.26.26 | I want to check how quickly I can find the category with the biggest footprint. | I show estimated CO₂e by category in **Impact analytics**. |
+| Rohan | 11.26.26 | I want to see whether I can compare a purchase with a lower-impact alternative. | I compare scenarios and save alternatives in **Swap studio**. |
+| Diya | 11.24.26 | I want to check whether I can estimate cost per use and give myself time to think. | I calculate cost per use in **Decision lab** and save pause plans with a revisit date in **Wishlist**. |
+| Nikhil | 11.27.26 | I want to check whether I can understand why a product matched my shopping intent. | I show product suggestions and explain the matches in **Discover**. |
+| Meera | 11.27.26 | I want to check whether I can tell from Orbit when I’m close to my monthly footprint goal. | I use Orbit’s expression, colors, and haze to show when my monthly estimate approaches or exceeds my goal. |
 
 I use my [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) to track tasks, ratings, comments, and changes after testing.
 
