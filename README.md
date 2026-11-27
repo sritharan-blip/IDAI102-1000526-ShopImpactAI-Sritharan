@@ -1,83 +1,83 @@
 <div align="center">
 
-![ShopImpactAI — Your everyday. Reimagined.](assets/shopimpact-banner.gif)
+![My ShopImpactAI banner](assets/shopimpact-banner.gif)
 
 # ShopImpactAI
 
-### Your everyday. Reimagined.
+### Why I built ShopImpactAI
 
-A personal impact studio for the space between **wanting something** and **choosing it well**.
+I built ShopImpactAI to help me pause before I buy something, understand its estimated impact, and decide whether it fits my budget and needs.
 
 [![App checks](https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan/actions/workflows/tests.yml/badge.svg)](https://github.com/sritharan-blip/IDAI102-1000526-ShopImpactAI-Sritharan/actions/workflows/tests.yml)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3153D5?style=flat-square)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.60%2B-7450DA?style=flat-square)
 ![Local recommendations](https://img.shields.io/badge/Recommendations-TF--IDF-117D78?style=flat-square)
 
-[The experience](#the-experience) · [Run locally](#run-locally) · [How it thinks](#how-it-thinks) · [Under the glass](#under-the-glass) · [Classmate feedback](#classmate-feedback)
+[What I built](#what-i-built) · [How I run it locally](#how-i-run-it-locally) · [How I make recommendations and estimates](#how-i-make-recommendations-and-estimates) · [How I organized the code](#how-i-organized-the-code) · [My classmate feedback](#my-classmate-feedback)
 
 </div>
 
 ---
 
-## The experience
+## What I built
 
-Track what you spend. Explore your estimated footprint. Find products that fit your intent. Take a breath before the next purchase.
+I designed the dashboard so I can track my spending, see my estimated footprint, and find products that fit what I’m looking for.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/screenshots/midnight-overview.jpg">
-  <img src="assets/screenshots/daylight-overview.jpg" alt="ShopImpact's liquid-glass dashboard with its monthly snapshot, floating data cards, and animated orb" width="100%">
+  <img src="assets/screenshots/daylight-overview.jpg" alt="My liquid-glass dashboard with a monthly snapshot, floating data cards, and an animated orb" width="100%">
 </picture>
 
-<p align="center"><sub>Actual Chrome captures with the demo ledger. Daylight clarity. Midnight atmosphere.</sub></p>
+<p align="center"><sub>I captured my demo ledger in Chrome using the Daylight and Midnight themes.</sub></p>
 
 <details>
-<summary><strong>Explore Midnight and Decision lab</strong></summary>
+<summary><strong>How I show Midnight and Decision lab</strong></summary>
 
-![Midnight dashboard](assets/screenshots/midnight-overview.jpg)
+![My Midnight dashboard](assets/screenshots/midnight-overview.jpg)
 
-![Decision lab with cost-per-use analysis, budget fit, and a saved purchase pause plan](assets/screenshots/decision-lab.jpg)
+![My Decision lab with cost per use, budget fit, and a saved pause plan](assets/screenshots/decision-lab.jpg)
 
 </details>
 
-| A clearer view | What you can do |
+| Feature | How I use it |
 | :--- | :--- |
-| **Liquid glass, two ways** | Frosted layers, floating data cards, and a Daylight / Midnight palette. The 3D Earth backdrop turns to a distinct angle on each page. |
-| **Orbit, your Earth mascot** | Drag the mini Earth to spin it and double-tap to make it celebrate. Its expression, colors, and haze react as this month's estimated footprint approaches or exceeds your goal. |
-| **Your impact, in motion** | Follow monthly spending, category estimates, lower-impact choices, goals, and your recent activity. The hero cards use your actual session data. |
-| **Smart matches** | Describe what you need. A local content model ranks the demo catalog by text similarity, category, budget, and estimated reduction, with reasons for every pick. |
-| **Decision lab** | Explore cost per use and budget fit. Save a pause plan to your wishlist for tomorrow, three days, or next week. |
-| **A more intentional wishlist** | Keep a shortlist, separate needs from wants, add notes, and choose a date to revisit an idea. |
-| **The full shopping journey** | Explore demo products, a cart, simulated checkout, orders, returns, rewards, and analytics in one connected session. |
+| **Liquid glass** | I switch between Daylight and Midnight. I used frosted layers, floating cards, and a 3D Earth backdrop with a different angle on each page. |
+| **Orbit, my Earth mascot** | I drag Orbit to spin it and double-tap to make it celebrate. I use its expression, colors, and haze to see how my monthly estimate compares with my goal. |
+| **Monthly dashboard** | I use my current session data to follow spending, category estimates, lower-impact choices, goals, and recent activity. |
+| **Smart matches** | I describe what I need and review locally ranked demo products. I use text similarity, category, budget, and estimated reductions to explain each pick. |
+| **Decision lab** | I check cost per use and budget fit, then save a pause plan for tomorrow, three days, or next week. |
+| **Wishlist** | I separate needs from wants, add notes, and decide when to revisit each idea. |
+| **Demo shopping** | I explore products, a cart, simulated checkout, orders, returns, rewards, and analytics in one session. |
 
-**Motion with an off switch.** Floating panels, orbital light, gentle card lifts, and page entrances respect your operating system's reduced-motion preference. You can also pause them under **Display & accessibility → Reduce motion**, or enable **High contrast**.
+I designed the animations to follow my operating system’s reduced-motion setting. I can also pause animations under **Display & accessibility → Reduce motion** or choose **High contrast**.
 
-**Color changes happen together.** Text, fields, selected controls, and their backgrounds use a single active palette. The animation lives in the glass and light rather than in fading text colors.
+I use one active palette for text, fields, controls, and backgrounds. I keep the motion in the glass and lighting effects so I can read the text during theme changes.
 
 <details>
-<summary><strong>Explore all 12 spaces</strong></summary>
+<summary><strong>How I use all 12 pages</strong></summary>
 
-| Space | Inside |
+| Page | What I do there |
 | :--- | :--- |
-| Overview | Monthly snapshot, goals, footprint trend, and personal activity brief |
-| Discover | Search, filter, product details, and explainable smart matches |
-| Decision lab | Cost per use, budget fit, and wishlist pause plans |
-| Log a purchase | Purchase ledger, literal search, CSV import, and export |
-| Wishlist | Need / want priorities, notes, estimated cost, and revisit dates |
-| Cart & checkout | Quantities, totals, and a non-binding demo checkout |
-| My orders | Illustrative session orders and tracking stages |
-| Impact analytics | Category summaries, comparisons, and budget pacing |
-| Swap studio | Assumed lower-factor scenarios and comparison baskets |
-| Eco rewards | Milestones, progress, and weekly challenges |
-| Help & returns | Local demo return and support forms |
-| Profile | Session profile and purchase-history personalization preferences |
+| Overview | I check my monthly snapshot, goals, footprint trend, and activity. |
+| Discover | I search and filter products, open details, and review why I got each match. |
+| Decision lab | I check my budget and cost per use, then save a pause plan. |
+| Log a purchase | I log purchases, search for exact text, and import or export CSV files. |
+| Wishlist | I mark needs and wants, jot down notes, estimate the cost, and set revisit dates. |
+| Cart & checkout | I adjust quantities, check totals, and try the simulated checkout. |
+| My orders | I follow demo orders and tracking stages. |
+| Impact analytics | I compare spending and footprint by category and track progress against my budget. |
+| Swap studio | I compare lower-impact scenarios and save alternatives in a comparison basket. |
+| Eco rewards | I check milestones, progress, and weekly challenges. |
+| Help & returns | I try sample return and support forms in my session. |
+| Profile | I manage my profile and choose whether to use purchase history for recommendations. |
 
 </details>
 
-> **A prototype, with clear boundaries.** Commerce, ratings, product availability, payments, order tracking, returns, and support are demonstrations. Nothing is bought, charged, shipped, or sent to a support team. Carbon estimates are directional comparisons, not verified product lifecycle assessments.
+> I built this as a prototype. I simulate shopping, ratings, availability, checkout, tracking, returns, and support. I use carbon estimates for approximate comparisons.
 
-## Run locally
+## How I run it locally
 
-Requires **Python 3.10 or later**. Choose **Explore the demo** on the sign-in screen to try an unconfigured local app without API keys or Streamlit secrets.
+I use **Python 3.10 or later**. From the sign-in screen, I choose **Explore the demo** when I run the app without API keys or Streamlit secrets.
 
 <details open>
 <summary><strong>Windows PowerShell</strong></summary>
@@ -91,7 +91,7 @@ python -m pip install -r requirements.txt
 python -m streamlit run ShopImpactAI.py
 ```
 
-If activation is restricted, run the environment's Python directly:
+If PowerShell blocks activation, I run the virtual environment’s Python directly.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -114,27 +114,29 @@ python -m streamlit run ShopImpactAI.py
 
 </details>
 
-Open the local address printed in your terminal, usually `http://localhost:8501`. Choose **Load demo data** for a populated dashboard. Stop the server with **Ctrl+C**.
+I open the local address from my terminal, usually `http://localhost:8501`. I choose **Load demo data** to populate my dashboard and press **Ctrl+C** to stop the server.
 
-For Streamlit Community Cloud, select this repository, the `main` branch, and `ShopImpactAI.py` as the main file.
+On Streamlit Community Cloud, I select this repository, the `main` branch, and `ShopImpactAI.py` as my main file.
 
-### Enable email accounts and cloud saves
+<a id="enable-email-accounts-and-cloud-saves"></a>
 
-1. Set up a hosted PostgreSQL database. Run [`tools/cloud_schema.sql`](tools/cloud_schema.sql) as the database owner. Give the dedicated runtime role `USAGE` on the `shopimpact_private` schema and `SELECT`, `INSERT`, and `UPDATE` on its tables. Keep that schema outside any public data API.
-2. Copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into **Settings → Secrets** on the deployed app. Enter the dedicated role's connection string. If your provider supplies its own database CA certificate, enter its PEM text as `ca_certificate` so the server can verify the connection. Supabase users should use the **Session pooler** connection details.
-3. Restart the app. Create a test account and add a purchase. Sign in again in a fresh session to check that the purchase returns, then use a second test account to verify that it opens its own workspace.
+### How I set up email accounts and cloud saves
 
-Visitors create an account with a name, email, and password. The database stores a salted scrypt password hash. Sign-in lasts for the current browser session. Your account and workspace remain available the next time you sign in. Set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo option when account storage is missing.
+1. I set up a hosted PostgreSQL database and run [`tools/cloud_schema.sql`](tools/cloud_schema.sql) as the database owner. I give the dedicated runtime role `USAGE` on `shopimpact_private`, plus `SELECT`, `INSERT`, and `UPDATE` on its tables. I keep that schema outside any public data API.
+2. I copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into **Settings → Secrets** and enter the runtime role’s connection string. If I receive a database CA certificate from my provider, I enter its PEM text as `ca_certificate` so I can verify the connection. On Supabase I use the **Session pooler** connection details.
+3. I restart the app, create a test account, and add a purchase. I sign in again in a fresh session to check that I can recover the purchase. I sign in to a second test account to confirm I see a separate workspace.
 
-## How it thinks
+I create an account with my name, email, and password. I store a salted scrypt hash in the database. I stay signed in for the current browser session and can reopen my saved workspace the next time I sign in. I can set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo when account storage is missing.
 
-### Explainable matches, without an API
+## How I make recommendations and estimates
 
-The recommender fits **TF-IDF** vectors to the small built-in catalog and compares them with your shopping intent using cosine similarity. Category affinity and the catalog's estimated reduction add explicit ranking signals. A selected category and maximum budget are hard filters.
+### How I rank products locally
 
-When intent is blank, recent purchase descriptions can personalize the ranking. Disable that use of history in **Profile**. A score ranks catalog items; it is not a confidence probability, an environmental certification, or a generative AI answer.
+I use **TF-IDF** to represent the built-in catalog and cosine similarity to compare it with my shopping intent. I also rank by category affinity and estimated reduction, and I filter by the selected category and maximum budget.
 
-### Estimates that keep their units
+If I leave my shopping intent blank, I can use recent purchases to personalize my ranking. I can turn that off in **Profile**. I use the score to rank products in my demo catalog.
+
+### How I calculate the estimates
 
 ```text
 Category estimate (kg CO2e) = category factor × price ÷ 10
@@ -142,10 +144,10 @@ Estimated reduction (kg CO2e) = max(0, recorded baseline − recorded footprint)
 Cost per use ($) = price ÷ (uses per week × 52 × years kept)
 ```
 
-Catalog checkout records its demo product factor and the category-average comparison baseline at purchase time. Manually choosing a greener scenario uses an assumed factor of at most 0.4 kg CO2e per $10. Decision lab uses your own usage and lifespan assumptions. These tools make assumptions visible; they do not measure product emissions or predict durability.
+At demo checkout, I record the product factor and the category-average baseline. When I choose a greener scenario manually, I use an assumed factor of up to 0.4 kg CO2e per $10. In Decision lab, I enter my own assumptions about how often I’ll use an item and how long I’ll keep it.
 
 <details>
-<summary><strong>View the category factors</strong></summary>
+<summary><strong>The category factors I use</strong></summary>
 
 | Category | Estimated kg CO2e per $10 |
 | :--- | ---: |
@@ -156,26 +158,26 @@ Catalog checkout records its demo product factor and the category-average compar
 | Beauty & personal care | 1.1 |
 | Home & living | 1.5 |
 
-These are broad illustrative factors. Real footprints vary with materials, manufacturing, location, transport, energy sources, and methodology. Use this app for exploration rather than formal footprint reporting.
+I use these broad factors to compare purchases. I treat the results as approximate because actual footprints depend on materials, manufacturing, location, transport, energy sources, and how the estimate was made.
 
 </details>
 
-## Your data, your copy
+## How I store my data
 
-In **local demo mode**, working data lives in Streamlit session state. A session ending or server restarting can clear it. Download a backup to keep your ledger and wishlist.
+In **local demo mode**, I keep my data in Streamlit session state. I can lose it when my session ends or the server restarts. I download a backup to keep my ledger and wishlist.
 
-With **account storage enabled**, ShopImpact automatically saves the ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to the signed-in account's PostgreSQL workspace. Temporary demo support and return requests, local profile fields, and demo delivery details stay in the current session. A cloud revision check prevents two tabs from silently overwriting each other.
+When I enable **account storage**, I save my ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to my PostgreSQL workspace. I keep temporary support and return requests, local profile fields, and demo delivery details in the current session. I check the cloud revision to prevent changes from one tab overwriting changes in another.
 
-| Tool | What it preserves |
+| Tool | What I import or preserve |
 | :--- | :--- |
-| CSV import | Required `product`, `category`, `price`; optional ISO `date` and `brand`. Emissions are recalculated from category and price. |
-| JSON backup v2 | Ledger, wishlist, recorded footprints, comparison baselines, identifiers, and wishlist dates. |
-| Legacy v1 restore | Recorded CO2 snapshots are retained where present. The ambiguous old `green_savings` field is discarded, and reductions are recomputed from the footprint and baseline. |
+| CSV import | I require `product`, `category`, and `price`, and accept optional ISO `date` and `brand`. I recalculate emissions from category and price. |
+| JSON backup v2 | I preserve my ledger, wishlist, footprints, baselines, identifiers, and wishlist dates. |
+| Legacy v1 restore | I keep recorded CO2 snapshots where available, discard the ambiguous `green_savings` field, and recalculate reductions from the footprint and baseline. |
 
-CSV imports are limited to **5 MB / 5,000 rows**; invalid rows are skipped and reported. Backups support **5 MB, 5,000 purchases, and 500 wishlist ideas**. Invalid backups reject the entire restore, leaving your current data intact. Backups exclude profile, cart, orders, support requests, and display preferences.
+I cap CSV imports at **5 MB / 5,000 rows** and report any invalid rows I skip. I support backups up to **5 MB, 5,000 purchases, and 500 wishlist ideas**. I reject invalid backups and retain the current data. I omit profile, cart, orders, support requests, and display preferences from backup files.
 
 <details>
-<summary><strong>A purchase CSV example</strong></summary>
+<summary><strong>An example CSV I can import</strong></summary>
 
 ```csv
 date,product,category,brand,price
@@ -183,16 +185,17 @@ date,product,category,brand,price
 2026-01-16,Second-hand reading lamp,Home & living,Etsy (vintage),35.00
 ```
 
-Category names must match the factor table. Dates must use `YYYY-MM-DD` and cannot be in the future. Prices must be finite and non-negative. A supplied `co2` column is ignored.
+I use category names from the factor table, dates in `YYYY-MM-DD` format that are no later than today, and finite, non-negative prices. I ignore any `co2` column in an imported CSV.
 
 </details>
 
-Purchases and profile details are not sent to retailers, support teams, or AI services. Account mode stores the workspace in the configured PostgreSQL database. Keep credentials, virtual environments, browser profiles, and private data out of commits.
+I keep purchases and profile details within the app and its configured database. I keep credentials, virtual environments, browser profiles, and private data out of my commits.
 
-## Under the glass
+## How I organized the code
 
-| Layer | Where it lives |
+| Layer | Where I put it |
 | :--- | :--- |
+
 | Entry point & navigation | `ShopImpactAI.py`, `shopimpact/app.py` |
 | Glass, motion & appearance tokens | `shopimpact/theme.py`, `shopimpact/assets/app.css` |
 | Orbit's 3D renderer | `shopimpact/earth.py`, `shopimpact/assets/earth.js` |
@@ -206,59 +209,60 @@ Purchases and profile details are not sent to retailers, support teams, or AI se
 | Reproducible animated cover | `tools/generate_banner.py` |
 | Python Turtle animation | [`tools/turtle_demo.py`](tools/turtle_demo.py) |
 
-The interface uses Streamlit and Plotly. pandas handles ledger summaries; Pillow and NumPy generate the self-hosted animated cover. There are no external image servers or API calls behind the app's artwork.
+I built the interface with Streamlit and Plotly. I use pandas for ledger summaries and Pillow with NumPy to generate the animated cover. I serve the artwork locally.
 
-The Earth backdrop uses a locally served 2048 × 1024 satellite map from [NASA Earth Observatory's Blue Marble: Next Generation](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/), produced by Reto Stöckli at NASA Goddard Space Flight Center. The [resized JPEG](https://github.com/MaxwellLee/physics-lab/blob/main/assets/textures/SOURCES.md#earth) was prepared by the Physics Lab project.
+I use a locally served 2048 × 1024 satellite map from [NASA Earth Observatory's Blue Marble: Next Generation](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/), produced by Reto Stöckli at NASA Goddard Space Flight Center. I use the [resized JPEG](https://github.com/MaxwellLee/physics-lab/blob/main/assets/textures/SOURCES.md#earth) from the Physics Lab project.
 
-### Python Turtle animation
+### How I run my Python Turtle animation
 
-The desktop animation traces three steps from Decision lab: check the budget, estimate cost per use, and save a pause plan. Run it from the repository root on a computer with Python and Tk installed:
+I use the desktop animation to show how I check the budget, estimate cost per use, and save a pause plan. I run it from the repository root with Python and Tk installed.
 
 ```bash
 python tools/turtle_demo.py
 ```
 
-Press **Space** to play or replay and **Esc** to close the window. Python Turtle renders the desktop demo. The Streamlit dashboard uses Plotly for charts, and Pillow generates the README banner.
+I press **Space** to play or replay the animation and **Esc** to close it.
 
-### Checks that follow the experience
+### How I test the app
 
 ```bash
 python -m compileall -q ShopImpactAI.py shopimpact tools tests
 python -m unittest discover -s tests -v
 ```
 
-GitHub Actions tests Python **3.10, 3.12, and 3.14**. A separate Chrome run checks real theme switches, foreground/background contrast, dropdowns, forms, mobile layout, and reduced motion, and saves screenshots as artifacts.
+I use GitHub Actions to test Python **3.10, 3.12, and 3.14**. I use Chrome to check theme switches, text and background contrast, dropdowns, forms, mobile layout, and reduced motion. I save screenshots from that run as artifacts.
 
-To run the browser checks locally, install Google Chrome and the optional test dependency:
+To run my browser checks locally, I install Google Chrome and Playwright.
 
 ```bash
 python -m pip install playwright
 python tests/browser_smoke.py
 ```
 
-Rebuild the animated cover with `python tools/generate_banner.py`.
+I rebuild my animated cover with `python tools/generate_banner.py`.
 
-## Classmate feedback
+<a id="classmate-feedback"></a>
 
-I’m asking six classmates to try ShopImpactAI and tell me where it makes a shopping decision easier or where they get stuck. These sample recommendations give each person a starting point to confirm or refine. Adrian and Kavin are listed for review, and the other four names are placeholders. Review dates and responses are pending.
+## My classmate feedback
 
-| Reviewer | Review date | Example recommendation to review | Feature I implemented |
+I’m preparing six usability tests for ShopImpactAI. I listed Adrian and Kavin as reviewers and added four placeholder names. I’m keeping all review dates and responses pending until I collect actual feedback.
+
+| Reviewer | Review date | What I want to check | Feature I implemented |
 | :--- | :--- | :--- | :--- |
-| Adrian | Pending | I’d like to log something I bought and see its footprint without doing the math. | Log a purchase calculates an estimated footprint from the category and price. |
-| Kavin | Pending | I want to see which category makes up the biggest part of my footprint. | Impact analytics shows estimated CO₂e by category. |
-| Rohan (sample) | Pending | Before buying something new, I’d like to see a lower-impact option and compare the estimates. | Swap studio compares alternative scenarios and lets you save a swap. |
-| Diya (sample) | Pending | I’d like to see what something would cost each time I use it and give myself a few days to think. | Decision lab calculates cost per use and saves a pause plan with a revisit date in Wishlist. |
-| Nikhil (sample) | Pending | If I describe what I’m looking for, I’d like to know why the app picked a certain product. | Discover uses shopping intent and filters to suggest catalog items and explain the matches. |
-| Meera (sample) | Pending | I’d like the Earth mascot to help me tell when I’m close to my monthly footprint goal. | Orbit changes its expression, colors, and haze based on the recorded monthly estimate and goal. |
+| Adrian | Pending | I want to check whether I can log a purchase and see its footprint without doing the math. | I calculate an estimated footprint from the category and price in **Log a purchase**. |
+| Kavin | Pending | I want to check how quickly I can find the category with the biggest footprint. | I show estimated CO₂e by category in **Impact analytics**. |
+| Rohan (sample) | Pending | I want to see whether I can compare a purchase with a lower-impact alternative. | I compare scenarios and save alternatives in **Swap studio**. |
+| Diya (sample) | Pending | I want to check whether I can estimate cost per use and give myself time to think. | I calculate cost per use in **Decision lab** and save pause plans with a revisit date in **Wishlist**. |
+| Nikhil (sample) | Pending | I want to check whether I can understand why a product matched my shopping intent. | I show product suggestions and explain the matches in **Discover**. |
+| Meera (sample) | Pending | I want to check whether I can tell from Orbit when I’m close to my monthly footprint goal. | I use Orbit’s expression, colors, and haze to show when my monthly estimate approaches or exceeds my goal. |
 
-The [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) has one task per reviewer and space for ratings, comments, and changes made after testing.
+I use my [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) to track tasks, ratings, comments, and changes after testing.
+
 
 ---
 
 <div align="center">
 
-**A little less impulse. A little more intention.**
-
-Built by [sritharan-blip](https://github.com/sritharan-blip).
+I built ShopImpactAI as [sritharan-blip](https://github.com/sritharan-blip).
 
 </div>
