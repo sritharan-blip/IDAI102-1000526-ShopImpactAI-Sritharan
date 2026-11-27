@@ -1,6 +1,8 @@
 """ShopImpact app."""
 from __future__ import annotations
 
+import logging
+
 import streamlit as st
 from .catalog import MONTHLY_CO2_TARGET
 from .navigation import _load_demo_data
@@ -97,7 +99,15 @@ def _render_sign_in(dsn: str | None, *, demo_available: bool = False) -> None:
                 owner, display_name = authenticate(dsn, email, password, st.context.ip_address, name=name)
             except AccountInputError as exc:
                 st.error(str(exc))
-            except Exception:
+            except Exception as exc:
+                # Log the failure category without credentials, user data, or raw driver messages.
+                detail = str(exc).lower()
+                checks = (("certificate", "TLS"), ("password authentication failed", "credentials"),
+                          ("timeout", "timeout"), ("does not exist", "database or schema"),
+                          ("permission denied", "database permissions"), ("could not connect", "network"))
+                category = next((label for marker, label in checks if marker in detail), type(exc).__name__)
+                logging.getLogger(__name__).warning("Account storage failure: %s (SQLSTATE %s)",
+                                                    category, getattr(exc, "sqlstate", None) or "none")
                 st.error("Account storage is unavailable right now. Please try again shortly.")
             else:
                 st.session_state.clear()

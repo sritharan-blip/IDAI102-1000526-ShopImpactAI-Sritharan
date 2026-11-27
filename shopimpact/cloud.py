@@ -59,17 +59,19 @@ def restore_workspace(state, payload: dict) -> None:
 
 @contextmanager
 def _connect(dsn: str):
+    import certifi
     import psycopg
 
     database = st.secrets.get("cloud", {})
     certificate = database.get("ca_certificate", "")
     with TemporaryDirectory(prefix="shopimpact-db-") as directory:
-        root = "system"
+        root = certifi.where()
         if certificate:
             root = str(Path(directory) / "provider-ca.pem")
             Path(root).write_text(certificate, encoding="ascii")
-        with psycopg.connect(dsn, connect_timeout=5, sslmode="verify-full", sslrootcert=root,
-                             options="-c statement_timeout=5000") as conn:
+        # Set the timeout after connecting so database proxies can handle startup normally.
+        with psycopg.connect(dsn, connect_timeout=12, sslmode="verify-full", sslrootcert=root) as conn:
+            conn.execute("SET LOCAL statement_timeout = '5s'")
             yield conn
 
 
