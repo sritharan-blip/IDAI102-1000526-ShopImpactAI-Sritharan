@@ -39,6 +39,10 @@ I designed the dashboard so I can track my spending, see my estimated footprint,
 
 ![My Decision lab with cost per use, budget fit, and a saved pause plan](assets/screenshots/decision-lab.jpg)
 
+![My live purchase estimate, monthly totals, and completed Turtle leaf](assets/screenshots/turtle-purchase.jpg)
+
+I captured the purchase flow after saving a sample grocery purchase in my Chrome test.
+
 </details>
 
 | Feature | How I use it |
