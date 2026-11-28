@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 150">
+  <title>Leaf drawn with Python Turtle</title>
+  <style>
+    polyline {fill:none;stroke:#237457;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+    @media (prefers-reduced-motion: no-preference) {
+      polyline {stroke-dasharray:1;animation:draw .85s ease-out var(--delay) both}
+    }
+    @keyframes draw {from {stroke-dashoffset:1} to {stroke-dashoffset:0}}
+  </style>
+  <rect x="1" y="1" width="188" height="148" rx="20" fill="#ecf8ef"/>
+  <polyline points="63.0,131.0 72.3,129.9 81.4,127.6 90.2,124.1 98.4,119.5 105.9,113.9 112.6,107.3 118.5,99.9 123.3,91.9 127.0,83.2 129.5,74.2 130.9,64.9 131.0,55.5 129.9,46.1 127.6,37.0 118.2,38.1 109.1,40.4 100.4,43.9 92.2,48.5 84.7,54.1 77.9,60.7 72.1,68.1 67.3,76.2 63.6,84.8 61.1,93.9 59.7,103.2 59.6,112.6 60.7,121.9 63.0,131.0" pathLength="1" style="--delay:0ms"/>
+  <polyline points="63.0,131.0 127.6,37.0" pathLength="1" style="--delay:130ms"/>
+  <polyline points="92.0,89.0 107.8,86.8" pathLength="1" style="--delay:260ms"/>
+  <polyline points="107.0,66.0 97.2,59.1" pathLength="1" style="--delay:390ms"/>
+  <polyline points="115.0,55.0 127.0,54.0" pathLength="1" style="--delay:520ms"/>
+</svg>

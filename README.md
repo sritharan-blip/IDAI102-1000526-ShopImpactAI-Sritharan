@@ -13,6 +13,8 @@ I built ShopImpactAI to help me pause before I buy something, understand its est
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.60%2B-7450DA?style=flat-square)
 ![Local recommendations](https://img.shields.io/badge/Recommendations-TF--IDF-117D78?style=flat-square)
 
+[My live Streamlit app](https://shopimpactai-sritharan.streamlit.app/) · [My design and testing](docs/DESIGN_AND_TESTING.md)
+
 [What I built](#what-i-built) · [How I run it locally](#how-i-run-it-locally) · [How I make recommendations and estimates](#how-i-make-recommendations-and-estimates) · [How I organized the code](#how-i-organized-the-code) · [My classmate feedback](#my-classmate-feedback)
 
 </div>
@@ -43,6 +45,7 @@ I designed the dashboard so I can track my spending, see my estimated footprint,
 | :--- | :--- |
 | **Liquid glass** | I switch between Daylight and Midnight. I used frosted layers, floating cards, and a 3D Earth backdrop with a different angle on each page. |
 | **Orbit, my Earth mascot** | I drag Orbit to spin it and double-tap to make it celebrate. I use its expression, colors, and haze to see how my monthly estimate compares with my goal. |
+| **Purchase logging** | I check my footprint estimate and alternatives as I enter my purchase details. I show an animated Python Turtle leaf when I log a lower-impact choice. |
 | **Monthly dashboard** | I use my current session data to follow spending, category estimates, lower-impact choices, goals, and recent activity. |
 | **Smart matches** | I describe what I need and review locally ranked demo products. I use text similarity, category, budget, and estimated reductions to explain each pick. |
 | **Decision lab** | I check cost per use and budget fit, then save a pause plan for tomorrow, three days, or next week. |
@@ -77,7 +80,7 @@ I use one active palette for text, fields, controls, and backgrounds. I keep the
 
 ## How I run it locally
 
-I use **Python 3.10 or later**. From the sign-in screen, I choose **Explore the demo** when I run the app without API keys or Streamlit secrets.
+I use **Python 3.10 or later**. I choose **Explore the demo** from the sign-in screen to try the app in a temporary session. I use the same demo on my live app.
 
 <details open>
 <summary><strong>Windows PowerShell</strong></summary>
@@ -126,7 +129,7 @@ On Streamlit Community Cloud, I select this repository, the `main` branch, and `
 2. I copy [`.streamlit/secrets.example.toml`](.streamlit/secrets.example.toml) into **Settings → Secrets** and enter the runtime role’s connection string. If I receive a database CA certificate from my provider, I enter its PEM text as `ca_certificate` so I can verify the connection. On Supabase I use the **Session pooler** connection details.
 3. I restart the app, create a test account, and add a purchase. I sign in again in a fresh session to check that I can recover the purchase. I sign in to a second test account to confirm I see a separate workspace.
 
-I create an account with my name, email, and password. I store a salted scrypt hash in the database. I stay signed in for the current browser session and can reopen my saved workspace the next time I sign in. I can set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to hide the demo when account storage is missing.
+I create an account with my name, email, and password. I store a salted scrypt hash in the database. I stay signed in for the current browser session and can reopen my saved workspace the next time I sign in. I can set `SHOPIMPACT_REQUIRE_ACCOUNT=1` to limit access to signed-in accounts.
 
 ## How I make recommendations and estimates
 
@@ -164,7 +167,7 @@ I use these broad factors to compare purchases. I treat the results as approxima
 
 ## How I store my data
 
-In **local demo mode**, I keep my data in Streamlit session state. I can lose it when my session ends or the server restarts. I download a backup to keep my ledger and wishlist.
+In **demo mode**, I keep my data in Streamlit session state. I can lose it when my session ends or the server restarts. I download a backup to keep my ledger and wishlist.
 
 When I enable **account storage**, I save my ledger, wishlist, cart, demo order history, saved swaps, comparison basket, goals, and display and recommendation preferences to my PostgreSQL workspace. I keep temporary support and return requests, local profile fields, and demo delivery details in the current session. I check the cloud revision to prevent changes from one tab overwriting changes in another.
 
@@ -207,7 +210,7 @@ I keep purchases and profile details within the app and its configured database.
 | Imports & snapshot backups | `shopimpact/data.py` |
 | Feature views | `shopimpact/marketplace.py`, `ledger.py`, `insights.py`, `wishlist.py` |
 | Reproducible animated cover | `tools/generate_banner.py` |
-| Python Turtle animation | [`tools/turtle_demo.py`](tools/turtle_demo.py) |
+| Python Turtle artwork | [`tools/generate_eco_leaf.py`](tools/generate_eco_leaf.py), [`tools/turtle_demo.py`](tools/turtle_demo.py) |
 
 I built the interface with Streamlit and Plotly. I use pandas for ledger summaries and Pillow with NumPy to generate the animated cover. I serve the artwork locally.
 
@@ -215,7 +218,9 @@ I use a locally served 2048 × 1024 satellite map from [NASA Earth Observatory's
 
 ### How I run my Python Turtle animation
 
-I use the desktop animation to show how I check the budget, estimate cost per use, and save a pause plan. I run it from the repository root with Python and Tk installed.
+I use Python Turtle to trace and export the leaf I animate in Streamlit. I regenerate the web asset with `python tools/generate_eco_leaf.py`. I add `--preview` to open the same drawing in a desktop window with Tk installed.
+
+I use a separate desktop animation to show how I check the budget, estimate cost per use, and save a pause plan. I run it from the repository root with Python and Tk installed.
 
 ```bash
 python tools/turtle_demo.py
@@ -230,7 +235,7 @@ python -m compileall -q ShopImpactAI.py shopimpact tools tests
 python -m unittest discover -s tests -v
 ```
 
-I use GitHub Actions to test Python **3.10, 3.12, and 3.14**. I use Chrome to check theme switches, text and background contrast, dropdowns, forms, mobile layout, and reduced motion. I save screenshots from that run as artifacts.
+I check live estimates, monthly totals, badges, and Turtle artwork with 12 mixed purchases in my [design and testing record](docs/DESIGN_AND_TESTING.md#how-i-tested-twelve-purchases). I use GitHub Actions to test Python **3.10, 3.12, and 3.14**. I use Chrome to check theme switches, text and background contrast, dropdowns, forms, mobile layout, and reduced motion. I save screenshots from that run as artifacts.
 
 To run my browser checks locally, I install Google Chrome and Playwright.
 
@@ -249,12 +254,12 @@ I’m preparing six usability tests for ShopImpactAI. I listed Adrian and Kavin 
 
 | Reviewer | Review date | What I want to check | Feature I implemented |
 | :--- | :--- | :--- | :--- |
-| Adrian | 11.25.26 | I want to check whether I can log a purchase and see its footprint without doing the math. | I calculate an estimated footprint from the category and price in **Log a purchase**. |
-| Kavin | 11.26.26 | I want to check how quickly I can find the category with the biggest footprint. | I show estimated CO₂e by category in **Impact analytics**. |
-| Rohan | 11.26.26 | I want to see whether I can compare a purchase with a lower-impact alternative. | I compare scenarios and save alternatives in **Swap studio**. |
-| Diya | 11.24.26 | I want to check whether I can estimate cost per use and give myself time to think. | I calculate cost per use in **Decision lab** and save pause plans with a revisit date in **Wishlist**. |
-| Nikhil | 11.27.26 | I want to check whether I can understand why a product matched my shopping intent. | I show product suggestions and explain the matches in **Discover**. |
-| Meera | 11.27.26 | I want to check whether I can tell from Orbit when I’m close to my monthly footprint goal. | I use Orbit’s expression, colors, and haze to show when my monthly estimate approaches or exceeds my goal. |
+| Adrian | Pending | I want to check whether I can log a purchase and see its footprint without doing the math. | I calculate an estimated footprint from the category and price in **Log a purchase**. |
+| Kavin | Pending | I want to check how quickly I can find the category with the biggest footprint. | I show estimated CO₂e by category in **Impact analytics**. |
+| Rohan | Pending | I want to see whether I can compare a purchase with a lower-impact alternative. | I compare scenarios and save alternatives in **Swap studio**. |
+| Diya | Pending | I want to check whether I can estimate cost per use and give myself time to think. | I calculate cost per use in **Decision lab** and save pause plans with a revisit date in **Wishlist**. |
+| Nikhil | Pending | I want to check whether I can understand why a product matched my shopping intent. | I show product suggestions and explain the matches in **Discover**. |
+| Meera | Pending | I want to check whether I can tell from Orbit when I’m close to my monthly footprint goal. | I use Orbit’s expression, colors, and haze to show when my monthly estimate approaches or exceeds my goal. |
 
 I use my [six-person usability feedback record](docs/USABILITY_FEEDBACK.md) to track tasks, ratings, comments, and changes after testing.
 
