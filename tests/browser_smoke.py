@@ -148,6 +148,7 @@ try:
         page.wait_for_function('''Array.from(document.querySelectorAll('[data-testid="stImage"] img'))
             .some(img => img.complete && img.naturalWidth > 0 &&
                 img.closest('[data-testid="stImage"]').textContent.includes('A Turtle leaf'))''')
+        page.get_by_text('Seasonal produce box added to your impact log.', exact=True).wait_for(state='hidden')
         capture(page, 'turtle-purchase')
         sidebar.get_by_text('Decision lab', exact=True).click()
         page.get_by_text('A little pause. A better decision.', exact=True).wait_for()
