@@ -2,18 +2,20 @@
 from __future__ import annotations
 
 import html
-from datetime import date, timedelta
-from uuid import uuid4
+from datetime import date
+from pathlib import Path
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 from .ui import render_table
-from .catalog import CATEGORIES, LOW_IMPACT_FACTOR
-from .logic import _new_purchase, _purchase_frame, calculate_impact, get_alternatives
+from .catalog import ALTERNATIVE_BRANDS, CATEGORIES, ECO_TIPS, LOW_IMPACT_FACTOR
+from .logic import _make_monthly_report, _new_purchase, _purchase_frame, calculate_impact, check_badges, get_alternatives
 from .data import _parse_purchase_csv
 
 
-def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
+LEAF_IMAGE = Path(__file__).with_name("assets") / "eco-leaf.svg"
+
+
+def _render_purchase_view(purchases: list[dict]) -> None:
     st.subheader("Log a purchase", anchor=False)
     st.caption("A quick estimate today makes your next choice easier to compare.")
 
@@ -52,7 +54,9 @@ def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
     st.session_state.setdefault("log_date", date.today())
     st.session_state.setdefault("log_green_choice", False)
 
-    with st.form("purchase_form", border=True, clear_on_submit=False):
+    details, preview = st.columns([2, 1], gap="medium")
+    # Regular widgets rerun on change, so the estimate updates before a purchase is saved.
+    with details, st.container(border=True):
         product = st.text_input("Product", key="log_product", placeholder="e.g. Oat milk or wireless headphones")
         category = st.selectbox("Category", list(CATEGORIES), key="log_category")
         col_brand, col_price, col_date = st.columns([1.2, 0.8, 0.9])
@@ -67,19 +71,19 @@ def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
             key="log_green_choice",
             help="Uses a lower-factor scenario (at most 0.4 kg CO2e per $10). This is an assumed comparison, not a verified product footprint.",
         )
-        submitted = st.form_submit_button(
-            "Add to my impact log", type="primary", icon=":material/add_circle:"
-        )
 
     estimated_co2 = calculate_impact(category, price)
     preview_co2 = round(min(LOW_IMPACT_FACTOR, CATEGORIES[category]["factor"]) * price / 10, 2) if greener_choice else estimated_co2
-    impact_class = CATEGORIES[category]['level'].lower().replace(' ', '-')
-    st.markdown(
-        f"<span class='si-muted'>Estimate preview:</span> <strong>{preview_co2:.2f} kg CO2e</strong> "
-        f"<span class='si-impact si-impact-{impact_class}'>· {CATEGORIES[category]['level']} impact</span>",
-        unsafe_allow_html=True,
-    )
+    with details:
+        submitted = st.button("Add to my impact log", type="primary", icon=":material/add_circle:")
+    with preview, st.container(border=True):
+        label = "Lower-factor scenario" if greener_choice else f'{CATEGORIES[category]["level"]} impact category'
+        st.metric("Live footprint estimate", f"{preview_co2:.2f} kg CO₂e")
+        st.caption(f"{label}. Category-based estimate.")
+        st.markdown("**Options to explore**")
+        st.write(", ".join(ALTERNATIVE_BRANDS[category]))
 
+    saved_purchase = None
     if submitted:
         if not product.strip():
             st.error("Add a product name before saving this purchase.")
@@ -87,9 +91,9 @@ def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
             st.error("Purchase date cannot be in the future.")
         else:
             scenario_co2 = preview_co2 if greener_choice else None
-            purchase = _new_purchase(product, category, brand, price, purchased_on, co2_override=scenario_co2)
-            st.session_state.purchases.append(purchase)
-            st.session_state.last_added_id = purchase["id"]
+            saved_purchase = _new_purchase(product, category, brand, price, purchased_on, co2_override=scenario_co2)
+            st.session_state.purchases.append(saved_purchase)
+            st.session_state.last_added_id = saved_purchase["id"]
             st.toast(f"{product.strip()} added to your impact log.", icon=":material/check_circle:")
 
     # The saved ID keeps the most recent purchase visible across Streamlit reruns.
@@ -97,6 +101,27 @@ def _render_purchase_view(purchases: list[dict], dark_mode: bool) -> None:
     last_purchase = next((item for item in reversed(purchases) if item.get("id") == last_id), None)
     if last_purchase:
         _render_swap(last_purchase)
+    with preview:
+        badges = check_badges(purchases, monthly_target=st.session_state.monthly_target)["badges"]
+        earned = [badge["name"] for badge in badges if badge["earned"]]
+        if earned:
+            st.caption("Badges earned: " + ", ".join(earned))
+
+        if saved_purchase:
+            st.caption(ECO_TIPS[(len(purchases) - 1) % len(ECO_TIPS)])
+            if CATEGORIES[category]["factor"] <= LOW_IMPACT_FACTOR or greener_choice:
+                leaf = LEAF_IMAGE.read_text(encoding="utf-8")
+                if st.session_state.get("reduce_motion"):
+                    leaf = leaf.replace("prefers-reduced-motion: no-preference", "not all")
+                # Renew the SVG URL so consecutive lower-impact purchases replay the strokes.
+                leaf += f'<!-- {saved_purchase["id"]} -->'
+                st.image(leaf, width=160, caption="A Turtle leaf for your lower-impact choice")
+
+    report = _make_monthly_report(purchases, date.today())
+    st.markdown("**This month in your impact log**")
+    spend_col, co2_col = st.columns(2)
+    spend_col.metric("Monthly spend", f'${report["total_spend"]:,.2f}')
+    co2_col.metric("Monthly footprint", f'{report["estimated_co2_kg"]:.2f} kg CO₂e')
 
     st.subheader("Recent purchases", anchor=False)
     frame = _purchase_frame(purchases)

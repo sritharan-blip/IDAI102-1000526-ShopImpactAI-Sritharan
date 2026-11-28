@@ -2,6 +2,7 @@
 import base64
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -135,6 +136,19 @@ try:
         assert not page.evaluate('window.auditContrast()'), page.evaluate('window.auditContrast()')
         capture(page, 'midnight-dropdown')
         page.keyboard.press('Escape')
+        page.get_by_role('button', name='Organic pantry', exact=True).click()
+        page.get_by_text('0.96 kg CO₂e', exact=True).wait_for()
+        price = page.get_by_role('spinbutton', name='Price ($)')
+        price.fill('50')
+        price.press('Enter')
+        page.get_by_text('2.00 kg CO₂e', exact=True).wait_for()
+        page.get_by_role('button', name='Add to my impact log').click()
+        leaf = page.get_by_text('A Turtle leaf for your lower-impact choice', exact=True)
+        leaf.wait_for()
+        page.wait_for_function('''Array.from(document.querySelectorAll('[data-testid="stImage"] img'))
+            .some(img => img.complete && img.naturalWidth > 0 &&
+                img.closest('[data-testid="stImage"]').textContent.includes('A Turtle leaf'))''')
+        capture(page, 'turtle-purchase')
         sidebar.get_by_text('Decision lab', exact=True).click()
         page.get_by_text('A little pause. A better decision.', exact=True).wait_for()
         page.get_by_role('textbox', name='What caught your eye?', exact=True).fill('A useful jacket')

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 import streamlit as st
 from .catalog import MONTHLY_CO2_TARGET
@@ -33,18 +34,19 @@ def main() -> None:
     try:
         dsn = cloud_settings()
     except CloudConfigurationError:
-        _render_sign_in(None)
-        return
-    if dsn is None:
-        if st.session_state.get("_demo_entry"):
-            _render_dashboard()
-        else:
-            _render_sign_in(None, demo_available=True)
+        dsn = None
+    demo_available = os.environ.get("SHOPIMPACT_REQUIRE_ACCOUNT") != "1"
+    if demo_available and st.session_state.get("_demo_entry"):
+        with st.sidebar:
+            if st.button("Exit demo", key="exit_demo"):
+                st.session_state.clear()
+                st.rerun()
+        _render_dashboard()
         return
 
     owner = st.session_state.get("_account_id")
-    if owner is None:
-        _render_sign_in(dsn)
+    if owner is None or dsn is None:
+        _render_sign_in(dsn, demo_available=demo_available)
         return
     open_workspace(dsn, owner)
 
@@ -273,7 +275,7 @@ def _render_dashboard() -> None:
         elif view == "My orders":
             _render_orders()
         elif view == "Log purchase":
-            _render_purchase_view(purchases, st.session_state.dark_mode)
+            _render_purchase_view(purchases)
         elif view == "Impact analytics":
             _render_analytics(purchases, st.session_state.dark_mode, monthly_target, monthly_budget)
         elif view == "Swap studio":
